@@ -214,6 +214,20 @@ button.hchk{cursor:pointer;padding:0}
 .sugg{font-size:13px;background:color-mix(in srgb,var(--accent) 10%,var(--chip));padding:7px 9px;border-radius:10px;margin-top:6px;line-height:1.5}
 .sugg .btn{min-height:30px;padding:3px 10px;margin-left:4px}
 .feel button{min-height:30px;padding:4px;font-size:12px}
+#hr-badge{position:fixed;top:calc(env(safe-area-inset-top) + 8px);left:50%;transform:translateX(-50%);z-index:60;border:0;border-radius:999px;padding:6px 14px;background:#e11d48;color:#fff;font-size:15px;box-shadow:0 4px 14px rgba(0,0,0,.25);cursor:pointer}
+#hr-badge b{font-size:18px}#hr-badge span{opacity:.9;font-size:12px;margin-left:2px}
+.dgrid{display:grid;grid-template-rows:repeat(7,1fr);gap:3px;margin-top:10px}
+.dgrid i{aspect-ratio:1;border-radius:3px;background:transparent;border:1px solid var(--line);box-sizing:border-box}
+.dgrid i.ok{background:var(--ok);border-color:var(--ok)}
+.dgrid i.rest{background:var(--mute);border-color:transparent;opacity:.35}
+.dgrid i.off{background:var(--chip);border-color:transparent;opacity:.5}
+.dgrid i.fut{border-color:transparent;background:transparent}
+.dgrid i.today{background:var(--chip)}
+.dgrid i.now{outline:2px solid var(--accent);outline-offset:1px}
+.dgrid .dl{font-size:9px;color:var(--mute);align-self:center}
+i.lg{display:inline-block;width:10px;height:10px;border-radius:2px;border:1px solid var(--line);vertical-align:-1px;margin-right:2px}
+i.lg.ok{background:var(--ok);border-color:var(--ok)}i.lg.rest{background:var(--mute);opacity:.35;border-color:transparent}i.lg.off{background:var(--chip);border-color:transparent}
+.card .bar{height:8px;border-radius:5px;background:var(--chip);overflow:hidden;margin-top:3px}.card .bar i{display:block;height:100%}
 </style>
 </head>
 <body>
@@ -222,6 +236,11 @@ button.hchk{cursor:pointer;padding:0}
 <div id="modal"></div>
 <div id="toast"></div>
 
+<script>
+/* @ios-web-bluetooth/core 2.0.0-beta.2 (WebBLE) - MIT licence - https://github.com/wklm/ioswebble-sdk */
+var WebBLECore=(function(exports){'use strict';var V=new Set(["DEVICE_DISCONNECTED","CONNECTION_TIMEOUT","GATT_OPERATION_FAILED","TIMEOUT","SCAN_ALREADY_IN_PROGRESS","WRITE_INCOMPLETE"]),k={INVALID_PARAMETER:"One or more input parameters were invalid. Check UUIDs, payload sizes, and option values.",BLUETOOTH_UNAVAILABLE:"Check that the browser supports Web Bluetooth and the device has Bluetooth enabled.",EXTENSION_NOT_INSTALLED:"Install the WebBLE iOS app and enable the Safari extension. Use @ios-web-bluetooth/detect to show an install banner.",PERMISSION_DENIED:"The user denied Bluetooth permission or the request was not triggered by a user gesture. Call requestDevice() from a click/tap handler and try again.",DEVICE_NOT_FOUND:"No matching device found. Check your scan filters or ensure the device is advertising.",DEVICE_DISCONNECTED:"Call device.connect() before performing GATT operations.",CONNECTION_TIMEOUT:"The device did not respond in time. Ensure it is in range and advertising.",SERVICE_NOT_FOUND:"The requested service was not found on this device. Check the service UUID and ensure it is included in requestDevice filters.",CHARACTERISTIC_NOT_FOUND:"The requested characteristic was not found in this service. Check the characteristic UUID.",CHARACTERISTIC_NOT_READABLE:"This characteristic does not support read. Use device.subscribe() instead if it supports notify.",CHARACTERISTIC_NOT_WRITABLE:"This characteristic does not support write. Check the characteristic properties.",CHARACTERISTIC_NOT_NOTIFIABLE:"This characteristic does not support notifications. Use device.read() for polling instead.",GATT_OPERATION_FAILED:"The GATT operation failed. The device may have disconnected or the characteristic may be busy.",SCAN_ALREADY_IN_PROGRESS:"Stop the current scan before starting a new one.",CONNECTION_LIMIT_REACHED:"Disconnect another device or raise maxConnections for this WebBLE instance before connecting more devices.",USER_CANCELLED:"The user cancelled the device picker. No action needed.",TIMEOUT:"The operation timed out. Retry or check device connectivity.",WRITE_INCOMPLETE:"Only part of the payload was written. Retry with smaller chunks or reconnect the device."},c=class n extends Error{constructor(e,t,i){let r=k[e];super(t??r),this.name="WebBLEError",this.code=e,this.suggestion=k[e],this.isRetriable=V.has(e),this.retryAfterMs=i?.retryAfterMs;}static from(e,t="GATT_OPERATION_FAILED"){if(e instanceof n)return e;let i=typeof e=="object"&&e!==null&&"name"in e&&typeof e.name=="string"?e.name:void 0,r=e instanceof Error?e.message:String(e),o=r.toLowerCase();switch(i){case "NotFoundError":return new n("DEVICE_NOT_FOUND",r);case "NotAllowedError":case "SecurityError":return new n("PERMISSION_DENIED",r);case "NetworkError":return new n("DEVICE_DISCONNECTED",r,{retryAfterMs:1e3});case "TimeoutError":return new n("TIMEOUT",r,{retryAfterMs:1e3});case "InvalidStateError":if(o.includes("disconnect"))return new n("DEVICE_DISCONNECTED",r,{retryAfterMs:1e3});break;}return r.includes("User cancelled")||r.includes("User canceled")?new n("USER_CANCELLED"):o.includes("no devices found")||r.includes("No Devices")?new n("DEVICE_NOT_FOUND"):r.includes("No Services matching")||o.includes("service not found")?new n("SERVICE_NOT_FOUND",r):r.includes("No Characteristics matching")||o.includes("characteristic not found")?new n("CHARACTERISTIC_NOT_FOUND",r):r.includes("GATT Server is disconnected")||o.includes("disconnected")?new n("DEVICE_DISCONNECTED",r,{retryAfterMs:1e3}):o.includes("not supported")&&o.includes("read")?new n("CHARACTERISTIC_NOT_READABLE",r):o.includes("not supported")&&o.includes("write")?new n("CHARACTERISTIC_NOT_WRITABLE",r):o.includes("not supported")&&o.includes("notif")?new n("CHARACTERISTIC_NOT_NOTIFIABLE",r):o.includes("permission")?new n("PERMISSION_DENIED",r):new n(t,r)}};async function _(n,e={}){let t=e.maxAttempts??3,i=e.delayMs??250,r=e.backoffMultiplier??1.5;if(!Number.isInteger(t)||t<=0)throw new c("INVALID_PARAMETER",`Invalid maxAttempts: ${t}. Must be a positive integer.`);if(!Number.isFinite(i)||i<0)throw new c("INVALID_PARAMETER",`Invalid delayMs: ${i}. Must be a non-negative number.`);if(!Number.isFinite(r)||r<1)throw new c("INVALID_PARAMETER",`Invalid backoffMultiplier: ${r}. Must be a number >= 1.`);for(let o=1;o<=t;o+=1)try{return await n(o)}catch(a){let s=c.from(a);if(o>=t||!s.isRetriable)throw s;let u=s.retryAfterMs??i*Math.pow(r,o-1);u>0&&await new Promise(l=>{setTimeout(l,u);});}throw new c("GATT_OPERATION_FAILED","Retry loop exited unexpectedly.")}var O="-0000-1000-8000-00805f9b34fb",I={generic_access:6144,gap:6144,generic_attribute:6145,gatt:6145,device_information:6154,battery_service:6159,heart_rate:6157,health_thermometer:6153,glucose:6152,blood_pressure:6160,running_speed_and_cadence:6164,cycling_speed_and_cadence:6166,cycling_power:6168,location_and_navigation:6169,environmental_sensing:6170,body_composition:6171,user_data:6172,weight_scale:6173,bond_management:6174,continuous_glucose_monitoring:6175,internet_protocol_support:6176,indoor_positioning:6177,pulse_oximeter:6178,http_proxy:6179,transport_discovery:6180,object_transfer:6181,fitness_machine:6182,mesh_provisioning:6183,mesh_proxy:6184,reconnection_configuration:6185,insulin_delivery:6202,binary_sensor:6203,emergency_configuration:6204,physical_activity_monitor:6206,audio_input_control:6211,volume_control:6212,volume_offset_control:6213,coordinated_set_identification:6214,device_time:6215,media_control:6216,generic_media_control:6217,constant_tone_extension:6218,telephone_bearer:6219,generic_telephone_bearer:6220,microphone_control:6221},N={device_name:10752,appearance:10753,peripheral_privacy_flag:10754,reconnection_address:10755,peripheral_preferred_connection_parameters:10756,service_changed:10757,system_id:10787,model_number_string:10788,serial_number_string:10789,firmware_revision_string:10790,hardware_revision_string:10791,software_revision_string:10792,manufacturer_name_string:10793,battery_level:10777,heart_rate_measurement:10807,body_sensor_location:10808,heart_rate_control_point:10809,temperature:10862};function b(n){return n.toString(16).padStart(8,"0")+O}var y,w;function G(){if(!y){y=new Map;for(let[n,e]of Object.entries(I)){let t=b(e);y.has(t)||y.set(t,n);}}return y}function z(){if(!w){w=new Map;for(let[n,e]of Object.entries(N)){let t=b(e);w.has(t)||w.set(t,n);}}return w}var $=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,q=/^[0-9a-f]{4}$/,H=/^[0-9a-f]{8}$/;function Q(n,e){let t=n.length,i=e.length,r=Array.from({length:i+1},(o,a)=>a);for(let o=1;o<=t;o++){let a=o-1;r[0]=o;for(let s=1;s<=i;s++){let u=r[s];r[s]=n[o-1]===e[s-1]?a:1+Math.min(a,r[s],r[s-1]),a=u;}}return r[i]}function j(n){return n.trim().replace(/([a-z0-9])([A-Z])/g,"$1_$2").replace(/([A-Z]+)([A-Z][a-z])/g,"$1_$2").replace(/[-.\s]+/g,"_").replace(/_+/g,"_").replace(/^_+|_+$/g,"").toLowerCase()}function M(n,e){let t=e[n];if(t!==void 0)return t;let i=n.replace(/_/g,"");if(i){for(let[r,o]of Object.entries(e))if(r.replace(/_/g,"")===i)return o}}function f(n){if(typeof n=="number"){if(!Number.isInteger(n)||n<0||n>4294967295)throw new TypeError(`Invalid UUID integer: ${n}. Must be a 16-bit or 32-bit unsigned integer.`);return b(n)}let e=n.trim(),t=e.toLowerCase();if($.test(t))return t;if(q.test(t))return "0000"+t+O;if(H.test(t))return t+O;let i=j(e),r=M(i,I);if(r!==void 0)return b(r);let o=M(i,N);if(o!==void 0)return b(o);let a=Object.keys(I).concat(Object.keys(N)),s,u=4;for(let h of a){let p=Q(i,h);p<u&&(u=p,s=h);}!s&&i.length>=4&&(s=a.find(h=>h.startsWith(i)));let l=s?` Did you mean "${s}"?`:"";throw new Error(`Invalid UUID: "${n}". Expected a 128-bit UUID, 4/8-digit hex, or a known Bluetooth SIG name.${l}`)}function Z(n){return G().get(n.toLowerCase())}function K(n){return z().get(n.toLowerCase())}function X(n){return /^[a-z][a-z0-9]*(_[a-z0-9]+)*$/.test(n)?n.split("_").map(e=>e.charAt(0).toUpperCase()+e.slice(1)).join(" "):n}var Y={gatt_characteristic_extended_properties:10496,gatt_characteristic_user_description:10497,gatt_client_characteristic_configuration:10498,gatt_server_characteristic_configuration:10499,gatt_characteristic_presentation_format:10500,gatt_characteristic_aggregate_format:10501,valid_range:10502,external_report_reference:10503,report_reference:10504,number_of_digitals:10505,value_trigger_setting:10506,es_configuration:10507,es_measurement:10508,es_trigger_setting:10509,time_trigger_setting:10510,complete_br_edr_transport_block_data:10511};function R(n){if(!Number.isInteger(n)||n<0||n>4294967295)throw new TypeError(`Failed to execute 'canonicalUUID' on 'BluetoothUUID': Value is not a valid unsigned long: ${n}`);return b(n)}function F(n){return typeof n=="number"?R(n):f(n)}function U(n){if(typeof n=="number")return R(n);let e=n.toLowerCase(),t=Y[e];return t!==void 0?b(t):f(n)}var J={canonicalUUID:R,getService:F,getCharacteristic:F,getDescriptor:U};var T=class{constructor(e){this.deps=e;this.inFlightWrites=new Map;}async write(e,t,i,r){let o=this.deps.validateTimeoutMs(r?.timeoutMs),a=await this.deps.getCharacteristic(e,t),s=Symbol(`write:${e}:${t}`);this.inFlightWrites.set(s,{service:e,characteristic:t,aborted:false});try{if(r?.mode==="without-response"){await this.deps.withOptionalTimeout(a.writeValueWithoutResponse(i),o,"Write without response timed out");return}await this.deps.withOptionalTimeout(a.writeValueWithResponse(i),o,"Write with response timed out");}catch(u){throw this.inFlightWrites.get(s)?.aborted?new c("WRITE_INCOMPLETE",`Write incomplete for ${e}/${t}: disconnected before completion`,{retryAfterMs:1e3}):c.from(u)}finally{this.inFlightWrites.delete(s);}}async writeFragmented(e,t,i,r){let o=this.toUint8Array(i),a=o.byteLength;if(a===0)return {bytesWritten:0,totalBytes:0,chunkSize:0,chunkCount:0,retryCount:0};let s=r?.chunkSize??this.deriveChunkSizeFromMtu(r?.mtu)??await this.deriveChunkSize(void 0,r?.mode),u=r?.maxRetries??0,l=r?.retryDelayMs??0,h=0,p=0,g=0;for(let E=0;E<a;E+=s){let d=Math.min(E+s,a),m=new Uint8Array(o.subarray(E,d)),v=0;for(;;)try{await this.write(e,t,m,r),h+=m.byteLength,p+=1;break}catch(A){if(v>=u)throw h>0&&h<a?new c("WRITE_INCOMPLETE",`Write fragmented incomplete (${h}/${a} bytes written): ${this.errorMessage(A)}`,{retryAfterMs:1e3}):c.from(A);v+=1,g+=1,l>0&&await this.delay(l);}}return {bytesWritten:h,totalBytes:a,chunkSize:s,chunkCount:p,retryCount:g}}async writeLarge(e,t,i,r){let o=this.toUint8Array(i),a=o.byteLength;if(a===0)return {bytesWritten:0,totalBytes:0,chunkSize:0,chunkCount:0};let s=await this.deriveChunkSize(r?.chunkSize,r?.mode),u=0,l=0;for(let h=0;h<a;h+=s){let p=Math.min(h+s,a),g=o.subarray(h,p),E=new Uint8Array(g);try{await this.write(e,t,E,r),u+=g.byteLength,l+=1;}catch(d){throw u>0&&u<a?new c("WRITE_INCOMPLETE",`Write incomplete (${u}/${a} bytes written): ${this.errorMessage(d)}`):c.from(d)}}if(u!==a)throw new c("WRITE_INCOMPLETE",`Write incomplete (${u}/${a} bytes written)`);return {bytesWritten:u,totalBytes:a,chunkSize:s,chunkCount:l}}async writeWithoutResponse(e,t,i,r){return this.write(e,t,i,{...r,mode:"without-response"})}async getWriteLimits(){if(!this.deps.isConnected())throw new c("DEVICE_DISCONNECTED");let e=this.deps.getTransport(),t=await e?.getWriteLimits?.(),i=t?.mtu??await e?.getMtu?.()??null;return {withResponse:t?.withResponse??null,withoutResponse:t?.withoutResponse??null,mtu:i}}async writeAuto(e,t,i,r){let o=this.toUint8Array(i),a=o.byteLength,s=new Uint8Array(o);if(a===0)return await this.write(e,t,s,r),{bytesWritten:0,totalBytes:0,chunkSize:0,chunkCount:0,retryCount:0,fragmented:false};let u=await this.deriveChunkSize(r?.chunkSize,r?.mode);return a<=u?(await this.write(e,t,s,r),{bytesWritten:a,totalBytes:a,chunkSize:a,chunkCount:1,retryCount:0,fragmented:false}):{...await this.writeFragmented(e,t,s,r),fragmented:true}}abortInFlightWrites(){for(let e of this.inFlightWrites.values())e.aborted=true;}async deriveChunkSize(e,t){if(e!==void 0){if(!Number.isInteger(e)||e<=0)throw new c("INVALID_PARAMETER",`Invalid chunkSize: ${e}. Must be a positive integer.`);return e}let i=await this.getWriteLimits().catch(()=>({withResponse:null,withoutResponse:null,mtu:null})),r=t==="without-response"?i.withoutResponse:i.withResponse;return typeof r=="number"&&r>0?r:typeof i.mtu=="number"&&i.mtu>3?i.mtu-3:20}deriveChunkSizeFromMtu(e){if(e===void 0)return null;if(!Number.isInteger(e)||e<=3)throw new c("INVALID_PARAMETER",`Invalid mtu: ${e}. Must be an integer greater than 3.`);return e-3}delay(e){return new Promise(t=>{setTimeout(t,e);})}toUint8Array(e){return e instanceof ArrayBuffer?new Uint8Array(e):new Uint8Array(e.buffer,e.byteOffset,e.byteLength)}errorMessage(e){return e instanceof Error?e.message:String(e)}};var C=class C{constructor(e){this.deps=e;this.notificationStates=new Map;this.handleNotification=e=>{let t=e.target,i=t.value;if(i){for(let[r,o]of this.notificationStates)if((o.characteristic??this.deps.charCache.get(r))===t){let[s,u]=r.split(":");for(let l of o.callbacks)try{l(i);}catch(h){this.deps.emitError(c.from(h),{operation:"device.notification-callback",service:s,characteristic:u});}break}}};}getNotificationStates(){return this.notificationStates}subscribe(e,t,i,r){let{unsubscribe:o,ready:a}=this.registerNotificationConsumer(e,t,i);a.catch(l=>{let h=c.from(l);try{r?.onError?.(h);}catch(p){this.deps.emitError(c.from(p),{operation:"device.subscribe.onError",service:e,characteristic:t});}});let s=r?.autoRecover??true;s&&this.addToRecoveryRegistry(this.charKey(e,t),e,t,i);let u=o;return ()=>{u(),s&&this.removeFromRecoveryRegistry(this.charKey(e,t),i);}}async subscribeAsync(e,t,i,r){let{unsubscribe:o,release:a,ready:s}=this.registerNotificationConsumer(e,t,i),u=r?.autoRecover??true;u&&this.addToRecoveryRegistry(this.charKey(e,t),e,t,i);try{await s;}catch(l){let h=c.from(l);throw await a(),u&&this.removeFromRecoveryRegistry(this.charKey(e,t),i),h}return ()=>{o(),u&&this.removeFromRecoveryRegistry(this.charKey(e,t),i);}}async*notifications(e,t,i={maxQueueSize:C.DEFAULT_NOTIFICATION_QUEUE_SIZE}){let r=this.validateMaxQueueSize(i.maxQueueSize??C.DEFAULT_NOTIFICATION_QUEUE_SIZE),o=i?.overflowStrategy??"error",a=[],s=0,u={resolve:null,reject:null,done:false,failure:null},l=d=>{if(!u.failure)if(u.resolve){let m=u.resolve;u.resolve=null,u.reject=null,m({value:d,done:false});}else {if(a.length>=r){s+=1;let m={service:e,characteristic:t,strategy:o,queueSize:r,droppedCount:s};this.deps.emitQueueOverflow(m);try{i?.onOverflow?.(m);}catch(v){this.deps.emitError(c.from(v),{operation:"device.notifications.onOverflow",service:e,characteristic:t});}if(o==="error"){let v=new c("GATT_OPERATION_FAILED",`Notification queue overflowed (maxQueueSize=${r}). Increase queue size or consume faster.`);u.failure=v;let A=u.reject;u.resolve=null,u.reject=null,A?.(v);return}if(o==="drop-oldest"&&a.shift(),o==="drop-newest")return}a.push(d);}},h=this.charKey(e,t);this.addToRecoveryRegistry(h,e,t,l);let{unsubscribe:p,release:g,ready:E}=this.registerNotificationConsumer(e,t,l);try{await E;}catch(d){throw await g(),this.removeFromRecoveryRegistry(h,l),d}try{for(;!u.done;){if(u.failure)throw u.failure;if(a.length>0)yield a.shift();else {let d=await new Promise((m,v)=>{u.resolve=m,u.reject=v;});if(d.done){let m=this.deps.getReconnectGate();if(m&&!this.deps.isIntentionalDisconnect()){if(await m.promise,this.deps.isIntentionalDisconnect())return;continue}return}yield d.value;}}}finally{let d=u.resolve;u.resolve=null,u.reject=null,u.done=true,await g(),this.removeFromRecoveryRegistry(h,l),d&&d({value:void 0,done:true});}}teardownSubscriptions(e){for(let t of this.notificationStates.values())this.detachNotificationListener(t),t.nativeActive&&this.stopNotificationsSafely(t.characteristic,{operation:e});this.notificationStates.clear();}cleanupSubscriptions(){this.teardownSubscriptions("notification.cleanup");}suspendSubscriptions(){this.teardownSubscriptions("notification.suspend");}async recoverSubscriptions(){let e=[...this.deps.recoveryRegistry.entries()];for(let[t,i]of e)try{for(let r of i.callbacks){let{ready:o}=this.registerNotificationConsumer(i.service,i.characteristic,r);await o;}}catch(r){this.deps.recoveryRegistry.delete(t);let o=c.from(r);this.deps.emitSubscriptionLost({service:i.service,characteristic:i.characteristic,error:o}),this.deps.emitError(o,{operation:"notification.recover",service:i.service,characteristic:i.characteristic});}}registerNotificationConsumer(e,t,i){let r=this.charKey(e,t),o=this.notificationStates.get(r);o||(o={callbacks:new Set,characteristic:null,listenerAttached:false,nativeActive:false,reconcilePromise:null},this.notificationStates.set(r,o)),o.callbacks.add(i);let a=()=>{let s=this.notificationStates.get(r);return s?.callbacks.has(i)?(s.callbacks.delete(i),this.syncNotificationState(r,e,t)):Promise.resolve()};return {unsubscribe:()=>{a();},release:a,ready:this.syncNotificationState(r,e,t)}}syncNotificationState(e,t,i){let r=this.notificationStates.get(e);if(!r)return Promise.resolve();let s=(r.reconcilePromise??Promise.resolve()).catch(u=>{this.deps.emitError(c.from(u),{operation:"notification.reconcile",service:t,characteristic:i});}).then(async()=>{for(;;){if(this.notificationStates.get(e)!==r){await this.deactivateNotificationState(r);return}if(r.callbacks.size===0){if(this.detachNotificationListener(r),r.nativeActive){r.nativeActive=false,await this.stopNotificationsSafely(r.characteristic,{operation:"notification.stop",service:t,characteristic:i});continue}this.deleteNotificationStateIfIdle(e,r);return}let l=r.characteristic??await this.deps.getCharacteristic(t,i);if(r.characteristic=l,r.listenerAttached||(l.addEventListener("characteristicvaluechanged",this.handleNotification),r.listenerAttached=true),!r.nativeActive){if(await l.startNotifications(),r.nativeActive=true,this.notificationStates.get(e)!==r){await this.deactivateNotificationState(r);return}if(r.callbacks.size===0)continue}if(r.callbacks.size!==0)return}}).finally(()=>{r.reconcilePromise===s&&(r.reconcilePromise=null,this.notificationStates.get(e)===r&&this.deleteNotificationStateIfIdle(e,r));});return r.reconcilePromise=s,s}async deactivateNotificationState(e){this.detachNotificationListener(e),e.nativeActive&&(e.nativeActive=false,await this.stopNotificationsSafely(e.characteristic,{operation:"notification.deactivate"}));}detachNotificationListener(e){!e.listenerAttached||!e.characteristic||(e.characteristic.removeEventListener("characteristicvaluechanged",this.handleNotification),e.listenerAttached=false);}deleteNotificationStateIfIdle(e,t){this.notificationStates.get(e)===t&&(t.callbacks.size>0||t.nativeActive||t.reconcilePromise||this.notificationStates.delete(e));}validateMaxQueueSize(e){if(!Number.isInteger(e)||e<=0)throw new c("INVALID_PARAMETER",`Invalid maxQueueSize: ${e}. Must be a positive integer.`);return e}async stopNotificationsSafely(e,t){if(e)try{await e.stopNotifications();}catch(i){this.deps.emitError(c.from(i),t);}}charKey(e,t){return `${f(e)}:${f(t)}`}addToRecoveryRegistry(e,t,i,r){let o=this.deps.recoveryRegistry.get(e);o||(o={service:t,characteristic:i,callbacks:new Set},this.deps.recoveryRegistry.set(e,o)),o.callbacks.add(r);}removeFromRecoveryRegistry(e,t){let i=this.deps.recoveryRegistry.get(e);i&&(i.callbacks.delete(t),i.callbacks.size===0&&this.deps.recoveryRegistry.delete(e));}};C.DEFAULT_NOTIFICATION_QUEUE_SIZE=256;var S=C;var L=class{constructor(e,t={}){this.server=null;this.primaryServicesCache=null;this.serviceCache=new Map;this.charCache=new Map;this.recoveryRegistry=new Map;this.disconnectListeners=new Set;this.reconnectedListeners=new Set;this.queueOverflowListeners=new Set;this.subscriptionLostListeners=new Set;this.errorListeners=new Set;this.reconnectGate=null;this.intentionalDisconnect=false;this.lastDisconnectReason=null;this.autoReconnectConfig=null;this.autoReconnectAbort=null;this.id=e.id,this.name=e.name??void 0,this.raw=e,this.hooks=t,this.writeChunker=new T({getCharacteristic:(i,r)=>this.getCharacteristic(i,r),emitError:(i,r)=>this.emitError(i,r),validateTimeoutMs:i=>this.validateTimeoutMs(i),withOptionalTimeout:(i,r,o)=>this.withOptionalTimeout(i,r,o),isConnected:()=>this.connected,getTransport:()=>this.raw.gatt}),this.notificationManager=new S({getCharacteristic:(i,r)=>this.getCharacteristic(i,r),emitError:(i,r)=>this.emitError(i,r),emitSubscriptionLost:i=>this.emitSubscriptionLost(i),emitQueueOverflow:i=>this.emitQueueOverflow(i),recoveryRegistry:this.recoveryRegistry,charCache:this.charCache,getReconnectGate:()=>this.reconnectGate,isIntentionalDisconnect:()=>this.intentionalDisconnect}),typeof e.addEventListener=="function"&&e.addEventListener("gattserverdisconnected",()=>{this.handleDisconnect();});}get connected(){return this.server?.connected??false}async connect(e){if(this.connected)return;e?.autoReconnect&&(this.autoReconnectConfig=e.autoReconnect===true?{}:e.autoReconnect),this.hooks.beforeConnect?.(this);let t=this.raw.gatt;if(!t)throw new c("GATT_OPERATION_FAILED","Device has no GATT server");let i=this.reconnectGate;try{this.server=await t.connect(),this.lastDisconnectReason=null,await this.notificationManager.recoverSubscriptions();for(let r of this.reconnectedListeners)try{r();}catch(o){this.emitError(c.from(o),{operation:"device.reconnected-listener"});}this.intentionalDisconnect=!1,this.hooks.onConnectionChange?.(this);}catch(r){throw this.server?.connected||(this.server=null,this.hooks.onConnectionChange?.(this)),c.from(r)}finally{this.reconnectGate===i&&(this.reconnectGate=null),i?.resolve();}}disconnect(){this.intentionalDisconnect=true,this.lastDisconnectReason="intentional",this.autoReconnectConfig=null,this.autoReconnectAbort?.abort(),this.autoReconnectAbort=null,this.writeChunker.abortInFlightWrites(),this.notificationManager.cleanupSubscriptions(),this.recoveryRegistry.clear(),this.reconnectGate&&(this.reconnectGate.resolve(),this.reconnectGate=null),this.server?.disconnect(),this.server=null,this.primaryServicesCache=null,this.hooks.onConnectionChange?.(this);}async connectWithRetry(e={}){await _(async()=>{await this.connect();},e);}async read(e,t,i,r){let o=typeof i=="function"?i:void 0,a=typeof i=="function"?r:i,s=this.validateTimeoutMs(a?.timeoutMs),u=await this.getCharacteristic(e,t);try{let l=await this.withOptionalTimeout(u.readValue(),s,"Read timed out");return o?await o(l):l}catch(l){throw c.from(l)}}async write(e,t,i,r){return this.writeChunker.write(e,t,i,r)}async writeFragmented(e,t,i,r){return this.writeChunker.writeFragmented(e,t,i,r)}async writeLarge(e,t,i,r){return this.writeChunker.writeLarge(e,t,i,r)}async writeWithoutResponse(e,t,i,r){return this.writeChunker.writeWithoutResponse(e,t,i,r)}async getWriteLimits(){return this.writeChunker.getWriteLimits()}async getMtu(){return (await this.getWriteLimits()).mtu}async writeAuto(e,t,i,r){return this.writeChunker.writeAuto(e,t,i,r)}subscribe(e,t,i,r){return this.notificationManager.subscribe(e,t,i,r)}async subscribeAsync(e,t,i,r){return this.notificationManager.subscribeAsync(e,t,i,r)}notifications(e,t,i){return this.notificationManager.notifications(e,t,i)}async watchAdvertisements(){if(typeof this.raw.watchAdvertisements!="function")throw new c("GATT_OPERATION_FAILED","watchAdvertisements is not supported on this device");await this.raw.watchAdvertisements();}async unwatchAdvertisements(){let e=this.raw;if(typeof e.unwatchAdvertisements!="function")throw new c("GATT_OPERATION_FAILED","unwatchAdvertisements is not supported on this device");await e.unwatchAdvertisements();}async forget(){if(typeof this.raw.forget!="function")throw new c("GATT_OPERATION_FAILED","forget is not supported on this device");await this.raw.forget();}async getPrimaryServices(){if(!this.connected)throw new c("DEVICE_DISCONNECTED");if(this.primaryServicesCache)return this.primaryServicesCache;try{let t=(await this.server.getPrimaryServices()).map(i=>{let r=this.serviceCache.get(i.uuid)??i;return this.serviceCache.set(i.uuid,r),r});return this.primaryServicesCache=t,t}catch(e){throw c.from(e)}}async getEffectiveMtu(){let e=await this.getWriteLimits();return typeof e.mtu=="number"&&e.mtu>0?e.mtu:typeof e.withResponse=="number"&&e.withResponse>0?e.withResponse+3:typeof e.withoutResponse=="number"&&e.withoutResponse>0?e.withoutResponse+3:23}getLastDisconnectReason(){return this.lastDisconnectReason}getActiveSubscriptions(){let e=this.notificationManager.getNotificationStates();return [...new Set([...e.keys(),...this.recoveryRegistry.keys()])].map(i=>{let r=e.get(i),o=this.recoveryRegistry.get(i),[a,s]=i.split(":");return {service:a,characteristic:s,callbackCount:r?.callbacks.size??o?.callbacks.size??0,autoRecovering:o!==void 0,nativeActive:r?.nativeActive??false}})}on(e,t){return e==="disconnected"&&this.disconnectListeners.add(t),e==="reconnected"&&this.reconnectedListeners.add(t),e==="queue-overflow"&&this.queueOverflowListeners.add(t),e==="subscription-lost"&&this.subscriptionLostListeners.add(t),()=>{this.off(e,t);}}off(e,t){e==="disconnected"&&this.disconnectListeners.delete(t),e==="reconnected"&&this.reconnectedListeners.delete(t),e==="queue-overflow"&&this.queueOverflowListeners.delete(t),e==="subscription-lost"&&this.subscriptionLostListeners.delete(t);}addErrorListener(e){return this.errorListeners.add(e),()=>{this.removeErrorListener(e);}}removeErrorListener(e){this.errorListeners.delete(e);}handleDisconnect(){let e=this.intentionalDisconnect?"intentional":"unexpected";if(this.lastDisconnectReason=e,this.writeChunker.abortInFlightWrites(),this.notificationManager.suspendSubscriptions(),this.serviceCache.clear(),this.primaryServicesCache=null,this.charCache.clear(),this.server=null,this.hooks.onConnectionChange?.(this),this.recoveryRegistry.size>0){let t,i=new Promise(r=>{t=r;});this.reconnectGate={promise:i,resolve:t};}for(let t of this.disconnectListeners)try{t(e);}catch(i){this.emitError(c.from(i),{operation:"device.disconnected-listener"});}e==="unexpected"&&this.autoReconnectConfig&&this.startAutoReconnect(this.autoReconnectConfig);}startAutoReconnect(e){this.autoReconnectAbort?.abort();let t=new AbortController;this.autoReconnectAbort=t;let i=e.maxAttempts??1/0,r=e.initialDelayMs??1e3,o=e.maxDelayMs??3e4,a=e.backoffMultiplier??2;(async()=>{let u=r;for(let l=1;l<=i;l++){if(t.signal.aborted||(await new Promise(h=>{let p=setTimeout(h,u);t.signal.addEventListener("abort",()=>{clearTimeout(p),h();},{once:true});}),t.signal.aborted))return;try{await this.connect();return}catch{u=Math.min(u*a,o);}}this.emitError(new c("CONNECTION_TIMEOUT",`Auto-reconnect failed after ${i} attempts`),{operation:"device.auto-reconnect"});})();}async withOptionalTimeout(e,t,i){if(t===void 0)return e;let r=null,o=new Promise((a,s)=>{r=setTimeout(()=>{s(new c("TIMEOUT",i));},t);});try{return await Promise.race([e,o])}finally{r!==null&&clearTimeout(r);}}validateTimeoutMs(e){if(e!==void 0){if(!Number.isFinite(e)||e<=0)throw new c("INVALID_PARAMETER",`Invalid timeoutMs: ${e}. Must be a positive number.`);return e}}fanout(e,t,i){for(let r of e)try{r(t);}catch(o){this.emitError(c.from(o),{operation:i});}}emitQueueOverflow(e){this.fanout(this.queueOverflowListeners,e,"device.queue-overflow-listener");}emitSubscriptionLost(e){this.fanout(this.subscriptionLostListeners,e,"device.subscription-lost-listener");}emitError(e,t){for(let i of this.errorListeners)try{i(e,t);}catch{}}async getCharacteristic(e,t){if(!this.connected)throw new c("DEVICE_DISCONNECTED");let i=this.charKey(e,t),r=this.charCache.get(i);if(r)return r;let o=await this.getService(e),a=f(t);try{let s=await o.getCharacteristic(a);return this.charCache.set(i,s),s}catch(s){throw c.from(s)}}async getService(e){let t=f(e);if(this.primaryServicesCache){let r=this.primaryServicesCache.find(o=>o.uuid===t);if(r)return r}let i=this.serviceCache.get(t);if(i)return i;try{let r=await this.server.getPrimaryService(t);return this.serviceCache.set(t,r),r}catch(r){throw c.from(r)}}charKey(e,t){return `${f(e)}:${f(t)}`}};function D(){if(typeof navigator>"u")return "unsupported";let n=navigator;return n.webble?.__webble===true?"safari-extension":n.bluetooth&&!n.bluetooth.__webbleCDNStub?"native":"unsupported"}function B(){if(typeof navigator>"u")return null;let n=navigator;return n.webble?.__webble===true?n.webble:n.bluetooth&&!n.bluetooth.__webbleCDNStub?n.bluetooth:null}var P=class{constructor(e){this.errorFactory=e;}unsupported(){throw this.errorFactory()}requestPermission(){this.unsupported();}requestBackgroundConnection(e){this.unsupported();}registerCharacteristicNotifications(e){this.unsupported();}registerBeaconScanning(e){this.unsupported();}getRegistrations(){this.unsupported();}unregister(e){this.unsupported();}update(e,t){this.unsupported();}connect(e){return this.requestBackgroundConnection(e)}subscribe(e){return this.registerCharacteristicNotifications(e)}scan(e){return this.registerBeaconScanning(e)}list(){return this.getRegistrations()}destroy(){}},W=class extends EventTarget{constructor(t){super();this.onwriterequest=null;this.onsubscriptionchange=null;this.onconnectionstatechange=null;this.onadvertisingstatechange=null;this.onnotificationready=null;this.errorFactory=t;}get advertising(){return  false}unsupported(){throw this.errorFactory()}advertise(t){this.unsupported();}addService(t){this.unsupported();}registerService(t){return this.addService(t)}startAdvertising(t){return this.advertise(t)}stopAdvertising(){this.unsupported();}send(t){this.unsupported();}sendNotification(t){return this.send(t)}destroy(){}},x=class{constructor(e){this.devices=new Map;this.platform=e?.platform??D(),this.maxConnections=this.normalizeMaxConnections(e?.maxConnections),this.bluetooth=this.platform!=="unsupported"?B():null,this.runtimeBluetooth=this.bluetooth,this.isSupported=this.bluetooth!==null,this.unsupportedFeatureErrorFactory=()=>this.platform==="unsupported"?new c("BLUETOOTH_UNAVAILABLE"):new c("GATT_OPERATION_FAILED","This WebBLE feature requires the iOS Safari WebBLE extension runtime."),this.unsupportedBackgroundSync=new P(this.unsupportedFeatureErrorFactory),this.unsupportedPeripheral=new W(this.unsupportedFeatureErrorFactory);}get backgroundSync(){return this.runtimeBluetooth?.backgroundSync??this.unsupportedBackgroundSync}get peripheral(){return this.runtimeBluetooth?.peripheral??this.unsupportedPeripheral}async requestDevice(e){if(!this.bluetooth)throw new c("BLUETOOTH_UNAVAILABLE");try{let t=await this.bluetooth.requestDevice(this.normalizeRequestDeviceOptions(e)??{acceptAllDevices:!0});return this.wrapDevice(t)}catch(t){throw c.from(t,"DEVICE_NOT_FOUND")}}async getDevices(){if(!this.bluetooth)throw new c("BLUETOOTH_UNAVAILABLE");let e=this.bluetooth;if(typeof e.getDevices!="function")return [];try{return (await e.getDevices()).map(i=>this.wrapDevice(i))}catch(t){throw c.from(t)}}async getAvailability(){if(!this.bluetooth)return  false;try{return await this.bluetooth.getAvailability()}catch{return  false}}async requestLEScan(e={acceptAllAdvertisements:true}){if(!this.bluetooth)throw new c("BLUETOOTH_UNAVAILABLE");let t=this.bluetooth;if(typeof t.requestLEScan!="function")return null;try{return await t.requestLEScan(e)}catch(i){throw c.from(i)}}normalizeRequestDeviceOptions(e){if(!e)return;let t=r=>{if(r)return r.map(o=>f(o))},i={};return e.acceptAllDevices!==void 0&&(i.acceptAllDevices=e.acceptAllDevices),e.optionalManufacturerData!==void 0&&(i.optionalManufacturerData=e.optionalManufacturerData),e.filters&&(i.filters=e.filters.map(r=>({...r,services:t(r.services)}))),e.exclusionFilters&&(i.exclusionFilters=e.exclusionFilters.map(r=>({...r,services:t(r.services)}))),e.optionalServices&&(i.optionalServices=t(e.optionalServices)),i}normalizeMaxConnections(e){if(e===void 0)return null;if(!Number.isInteger(e)||e<=0)throw new c("INVALID_PARAMETER",`Invalid maxConnections: ${e}. Must be a positive integer.`);return e}wrapDevice(e){let t=this.devices.get(e.id);if(t)return t;let i=new L(e,{beforeConnect:r=>{this.assertConnectionCapacity(r);},onConnectionChange:r=>{this.devices.set(r.id,r);}});return this.devices.set(e.id,i),i}assertConnectionCapacity(e){if(this.maxConnections===null||(this.devices.set(e.id,e),e.connected))return;let t=[...this.devices.values()].filter(i=>i.connected).length;if(t>=this.maxConnections)throw new c("CONNECTION_LIMIT_REACHED",`Connection limit reached (${t}/${this.maxConnections}). Disconnect another device or increase maxConnections before connecting ${e.name??e.id}.`,{retryAfterMs:1e3})}};function ee(n,e=0){return n.getUint8(e)}function te(n,e=0){return n.getUint16(e,true)}function re(n,e=0){return n.getUint16(e,false)}function ie(n,e=0){return n.getInt16(e,true)}function ne(n,e=0){return n.getUint32(e,true)}function oe(n,e=0){return n.getFloat32(e,true)}function se(n){return new TextDecoder().decode(n.buffer.slice(n.byteOffset,n.byteOffset+n.byteLength))}function ae(n){return new Uint8Array(n.buffer.slice(n.byteOffset,n.byteOffset+n.byteLength))}exports.BluetoothUUID=J;exports.WebBLE=x;exports.WebBLEDevice=L;exports.WebBLEError=c;exports.canonicalUUID=R;exports.detectPlatform=D;exports.getBluetoothAPI=B;exports.getCharacteristicName=K;exports.getDescriptor=U;exports.getDisplayName=X;exports.getServiceName=Z;exports.readBytes=ae;exports.readFloat32LE=oe;exports.readInt16LE=ie;exports.readUint16BE=re;exports.readUint16LE=te;exports.readUint32LE=ne;exports.readUint8=ee;exports.readUtf8=se;exports.resolveUUID=f;exports.withRetry=_;return exports;})({});
+
+</script>
 <script>
 (function(){
 'use strict';
@@ -440,6 +459,7 @@ const ICO={
   history:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
   progress:'<path d="M4 20V4M4 20h16M8 16l4-5 3 3 5-7"/>',
   '75':'<path d="M12 3c.6 3.2 4.8 5 4.8 10a4.8 4.8 0 01-9.6 0c0-2.4 1.3-3.6 2.2-5.3.8 1.4 1.6 2 2.2 2.3C12 7.5 11.6 5 12 3z"/>',
+  daily:'<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 12l3 3 5-6"/>',
   gear:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>'
 };
 const ico=n=>'<svg viewBox="0 0 24 24" aria-hidden="true">'+ICO[n]+'</svg>';
@@ -503,15 +523,16 @@ function render(){
   const app=$('#app');
   if(!S.ready){ app.innerHTML=loadingHTML(); return }
   applyTheme();
-  try{hCheck()}catch(x){}
-  const v={today:viewToday,'75':viewHard,plan:viewPlan,library:viewLibrary,history:viewHistory,progress:viewProgress}[S.tab]();
-  const titles={today:'Today','75':'75 Hard',plan:'Plan',library:'Library',history:'History',progress:'Progress'};
+  try{if(hardMode()!=='removed')hCheck()}catch(x){}
+  if(S.tab==='75'&&hardMode()!=='on')S.tab='daily';
+  const v={today:viewToday,daily:viewDaily,'75':viewHard,plan:viewPlan,library:viewLibrary,history:viewHistory,progress:viewProgress}[S.tab]();
+  const titles={today:'Today',daily:'Daily','75':'75 Hard',plan:'Plan',library:'Library',history:'History',progress:'Progress'};
   app.innerHTML='<div class="top"><div><h1>'+titles[S.tab]+'</h1>'+(S.tab==='today'?'<div class="sub">'+esc(fmtDate(todayStr(),{weekday:'long',day:'numeric',month:'long'}))+'</div>':'')+'</div><button class="icon-btn" data-act="settings" aria-label="Settings">'+ico('gear')+'</button></div>'
     +(P.mode==='local'&&P.note?'<div class="hint">'+esc(P.note)+'</div>':'')
     +v
-    +'<nav class="tabbar"><div class="in">'+['today','75','plan','library','history','progress'].map(t=>'<button class="tab '+(S.tab===t?'on':'')+'" data-act="tab" data-t="'+t+'">'+ico(t)+titles[t]+'</button>').join('')+'</div></nav>';
+    +'<nav class="tabbar"><div class="in">'+['today','daily'].concat(hardMode()==='on'?['75']:[],['plan','library','history','progress']).map(t=>'<button class="tab '+(S.tab===t?'on':'')+'" data-act="tab" data-t="'+t+'">'+ico(t)+titles[t]+'</button>').join('')+'</div></nav>';
   if(W) renderWorkout();
-  const hp=hS().pending;
+  const hp=hardMode()==='removed'?null:hS().pending;
   if(hp&&!$('#modal').classList.contains('on')){hS().pending=null;saveCfg();const ha=hS().attempts.find(x=>x.id===hp);if(ha)setTimeout(()=>hShowEnd(ha),60)}
 }
 function loadingHTML(){
@@ -877,6 +898,7 @@ function afterLoad(){
   if(!S.cfg.habits){S.cfg.habits=habitSeed();changed=true}
   if((S.cfg.planV||0)<1){planMigrate();S.cfg.planV=1;changed=true}
   if((S.cfg.planV||0)<2){splitMigrate();S.cfg.planV=2;changed=true}
+  if(!S.cfg.dailyV){dailyMigrate();S.cfg.dailyV=1;changed=true}
   if(changed)saveCfg();
   if(n)setTimeout(()=>toast('Library loaded \u2014 '+n+' exercises ready'),700);
 }
@@ -966,7 +988,7 @@ function weeklyCols(n){
 function viewProgress(){
   const P_=S.prog;
   let html='<div class="seg sm" style="margin-bottom:6px">'+[['report','Report'],['strength','Strength'],['run','Running'],['mobility','Mobility'],['overview','Overview']].map(x=>'<button class="'+(P_.view===x[0]?'on':'')+'" data-act="prog-view" data-v="'+x[0]+'">'+x[1]+'</button>').join('')+'</div>';
-  if(P_.view==='report') return html+progReport();
+  if(P_.view==='report') return html+progReport()+dailyMonthReport();
   if(P_.view==='mobility') return html+progMobility();
   if(P_.view==='strength') return html+progStrength();
   if(P_.view==='run') return html+progRun();
@@ -1430,6 +1452,8 @@ function openSettings(){
     +'<label class="lbl">Rest timer</label><select data-f="rest">'+[45,60,90,120,150,180,240].map(v=>'<option value="'+v+'"'+((S.cfg.rest||90)===v?' selected':'')+'>'+v+' seconds</option>').join('')+'</select>'
     +'<label class="lbl">Heart rate</label><div class="row3" style="grid-template-columns:1fr 1fr"><div><input inputmode="numeric" data-f="maxhr" value="'+esc(S.cfg.maxHR||'')+'" placeholder="Max HR"></div><div><input inputmode="numeric" data-f="resthr" value="'+esc(S.cfg.restHR||'')+'" placeholder="Resting HR"></div></div>'
     +(num(S.cfg.maxHR)?'<div class="hint">'+Object.keys(RUNKINDS).map(k=>{const b=zoneBand(k);return '<b>'+RUNKINDS[k].label+'</b> '+b.lo+'\u2013'+b.hi}).join(' \u00b7 ')+' bpm</div>':'<div class="hint">Enter your max heart rate to turn on zone checking for every run.</div>')
+    +hrSection()
+    +hardSection()
     +gbSection()
     +'<label class="lbl">Storage</label><div class="sub">Everything is saved <b>on this device only</b>. Nothing is sent anywhere and nobody else \u2014 Claude included \u2014 can read it. Each device keeps its own copy, so back up before switching phones.</div>'
     +'<div class="row" style="margin-top:14px;flex-wrap:wrap"><button class="btn" data-act="export">Backup (copy data)</button><button class="btn" data-act="import-open">Restore</button>'+'<button class="btn" data-act="starter">Restore full library</button>'+'</div>'
@@ -1533,7 +1557,7 @@ function weekOf(mk){
   saveCfg();return c.weeks[mk];
 }
 const resolveTpl=id=>id==='s_mob'?mobTpl():id;
-function dayPlan(ds){const d=parseYmd(ds),p=weekOf(monKey(d)).d[dow(d)]||{in:null,out:null};return {in:resolveTpl(p.in),out:p.out}}
+function dayPlan(ds){const d=parseYmd(ds),p=weekOf(monKey(d)).d[dow(d)]||{in:null,out:null};if(S.cfg.daily&&S.cfg.daily.work&&S.cfg.daily.work[ds])return {in:'tpl_wmorn',out:null,work:true};return {in:resolveTpl(p.in),out:p.out}}
 function tplSub(t){return tplCat(t)==='run'||t.type==='run'?(RUNKINDS[t.runKind||'easy']||RUNKINDS.easy).label+(t.targetKm?' · '+t.targetKm+' km':''):(t.items||[]).length+' exercises'}
 function slotRow(label,id,done,out){
   const t=id&&tplById(id),ic=out?'🌳':'🏋️';
@@ -1553,7 +1577,7 @@ function sundayCard(){
 function weekTarget(){const wk=weekOf(monKey(new Date()));let n=0;wk.d.forEach(x=>{if(x.in)n++;if(x.out)n++});return n||3}
 function viewToday(){
   const ts=todayStr(),doneToday=S.sessions.filter(s=>s.date===ts),st=weekStreak();
-  let html=eveningCheck();
+  let html=dailyBanners();
   const draft=!W&&lsGet('wl_draft');
   if(draft) html+='<div class="card"><div class="row"><div class="grow"><b>Workout in progress</b><div class="sub">'+esc(draft.name)+' · '+esc(fmtDate(draft.date))+'</div></div><button class="btn primary" data-act="resume">Resume</button></div><button class="btn danger sm" data-act="drop-draft">Discard draft</button></div>';
   html+=sundayCard()+reviewCard()+deloadCard()+mobDueCard();
@@ -1568,14 +1592,15 @@ function viewToday(){
     const dt=new Date(mon);dt.setDate(dt.getDate()+i);const ds=ymd(dt);
     const p=wkp.d[i]||{},ts2=[resolveTpl(p.in),p.out].map(tplById).filter(Boolean);
     const done=S.sessions.some(s=>s.date===ds);
-    html+='<div class="wd '+(ds===ts?'today':'')+'">'+DAYS[i]+'<b>'+dt.getDate()+'</b><div class="mk">'+(done?'<span class="ok">✓</span>':ts2.map(t=>'<span class="dot '+t.type+'"></span>').join(''))+'</div></div>';
+    html+='<div class="wd '+(ds===ts?'today':'')+'">'+DAYS[i]+'<b>'+dt.getDate()+'</b><div class="mk">'+(isWork(ds)&&!done?'\ud83e\uddf3':done?'<span class="ok">✓</span>':ts2.map(t=>'<span class="dot '+t.type+'"></span>').join(''))+'</div></div>';
   }
   html+='</div><div class="stats" style="margin-top:12px"><div class="stat"><b>'+st.thisWeek+'/'+st.T+'</b><span>this week</span></div><div class="stat"><b>'+r1(weekKm(mon))+'</b><span>km this week</span></div><div class="stat"><b>'+st.cur+'</b><span>week streak</span></div></div>';
   const kw=kmWarning(mon);
   if(kw) html+='<div class="sub" style="margin-top:8px;color:var(--core);font-weight:600">'+esc(kw)+'</div>';
   html+='</div>';
   const p=dayPlan(ts);
-  html+='<div class="card"><h2>Planned for today</h2><div class="list">'+slotRow('Indoor',p.in,doneToday,false)+slotRow('Outdoor',p.out,doneToday,true)+'</div></div>';
+  html+='<div class="card"><h2>'+(isWork(ts)?'\ud83e\uddf3 Work day \u00b7 optional 15 min this morning':'Planned for today')+'</h2><div class="list">'+slotRow('Indoor',p.in,doneToday,false)+(p.out?slotRow('Outdoor',p.out,doneToday,true):'')+'</div>'+(isWork(ts)?'<div class="sub" style="margin-top:6px">Skip it if you need to \u2014 work days don\u2019t break your streak.</div>':'')+'</div>';
+  html+=todayPlanCard();
   if(doneToday.length) html+='<div class="card"><h2>Done today</h2>'+doneToday.map(sessCard).join('')+'</div>';
   return html;
 }
@@ -1590,7 +1615,7 @@ function viewPlan(){
     +'<div class="sub" style="margin-bottom:6px">Week of '+esc(fmtDate(mk,{day:'numeric',month:'long'}))+'</div>';
   for(let i=0;i<7;i++){
     const dt=new Date(mon);dt.setDate(dt.getDate()+i);const p=wk.d[i]||{};
-    html+='<div class="plan-day"><b>'+DAYS[i]+' '+dt.getDate()+(ymd(dt)===todayStr()?' · today':'')+'</b>'
+    html+='<div class="plan-day"><div class="row between"><b>'+DAYS[i]+' '+dt.getDate()+(ymd(dt)===todayStr()?' · today':'')+'</b><button class="btn sm'+(isWork(ymd(dt))?' primary':'')+'" style="min-height:28px;padding:2px 10px" data-act="dy-work" data-d="'+ymd(dt)+'">\ud83e\uddf3 '+(isWork(ymd(dt))?'Work day':'Work?')+'</button></div>'
       +'<div class="row" style="gap:6px;margin-top:6px"><span style="flex:0 0 22px">🏋️</span><select data-f="wk-slot" data-w="'+mk+'" data-d="'+i+'" data-s="in">'+tplOpts(p.in,false)+'</select></div>'
       +'<div class="row" style="gap:6px;margin-top:6px"><span style="flex:0 0 22px">🌳</span><select data-f="wk-slot" data-w="'+mk+'" data-d="'+i+'" data-s="out">'+tplOpts(p.out,true)+'</select></div></div>';
   }
@@ -2351,10 +2376,10 @@ function suggHTML(it,i){
 /* ----- Sunday review ----- */
 function weekStats(mk){
   const end=addDays(mk,6),ss=S.sessions.filter(s=>s.date>=mk&&s.date<=end),R=runStats(ss);
-  const a=hS().active;let days=0,mins={};
+  let days=dyWeekWorkout(mk),mins=dyWeekMins(mk);const a=null;
   if(a)for(let ds=mk;ds<=end;ds=addDays(ds,1)){if(ds<a.start||ds>hToday())continue;const st=hStatus(a,ds);if(st.done)days++;st.tasks.forEach(k=>{if(k.kind==='min')mins[k.name]=(mins[k.name]||0)+hTaskAmt(k,st.r)})}
   const sl=[];for(let ds=addDays(mk,1);ds<=addDays(end,1);ds=addDays(ds,1)){const v=hS().sleep[ds];if(v!=null)sl.push(num(v))}
-  return {workouts:ss.length,km:r1(R.km),days:days,mins:mins,sleep:sl.length?r1(sl.reduce((x,y)=>x+y,0)/sl.length):null,habit:hbWeekScore()};
+  return {workouts:ss.length,km:r1(R.km),days:days,mins:mins,sleep:sl.length?r1(sl.reduce((x,y)=>x+y,0)/sl.length):null,habit:dyWeekPct(mk)};
 }
 function reviewCard(){
   if(dow(new Date())!==6)return '';const mk=monKey(new Date()),rv=(S.cfg.reviews||{})[mk];
@@ -2364,7 +2389,7 @@ function openReview(){
   const mk=monKey(new Date()),st=weekStats(mk),rv=(S.cfg.reviews||{})[mk]||{};
   const past=Object.keys(S.cfg.reviews||{}).filter(k=>k!==mk).sort().reverse().slice(0,6);
   openModal('<h2>Weekly review</h2><div class="sub">Week of '+esc(fmtDate(mk,{day:'numeric',month:'long'}))+'</div>'
-    +'<div class="stats" style="margin-top:10px"><div class="stat"><b>'+st.workouts+'</b><span>workouts</span></div><div class="stat"><b>'+st.km+'</b><span>km run</span></div><div class="stat"><b>'+st.days+'</b><span>75 Hard days</span></div></div>'
+    +'<div class="stats" style="margin-top:10px"><div class="stat"><b>'+st.workouts+'</b><span>workouts</span></div><div class="stat"><b>'+st.km+'</b><span>km run</span></div><div class="stat"><b>'+st.days+'</b><span>workout days</span></div></div>'
     +'<div class="stats" style="margin-top:8px"><div class="stat"><b>'+(st.sleep!=null?st.sleep+' h':'–')+'</b><span>avg sleep</span></div><div class="stat"><b>'+(st.habit!=null?st.habit+'%':'–')+'</b><span>habits</span></div><div class="stat"><b>'+(Object.keys(st.mins).map(k=>r1(st.mins[k]/60)+' h').join(' / ')||'–')+'</b><span>'+(esc(Object.keys(st.mins).join(' / '))||'timed tasks')+'</span></div></div>'
     +'<label class="lbl">What nearly made you fail this week?</label><textarea id="rv-q1" rows="2">'+esc(rv.q1||'')+'</textarea>'
     +'<label class="lbl">One thing to do differently next week</label><textarea id="rv-q2" rows="2">'+esc(rv.q2||'')+'</textarea>'
@@ -2462,6 +2487,368 @@ document.addEventListener('click',ev=>{
     case 'gb-off':confirmModal('Disconnect Google backup? Your backups in Google stay.','Disconnect',()=>{lsDel('wl_gb');openSettings()});break;
   }
 });
+/* ---------- LIVE HEART RATE FROM WATCH (Web Bluetooth / WebBLE) ---------- */
+const HR={dev:null,bpm:null,ts:0,name:'',unsub:null,lock:null,busy:false};
+function hrZone(b){const order=['recovery','easy','threshold','intervals'];let z='';order.forEach(k=>{const r=zoneBand(k);if(r&&b>=r.lo-2)z=RUNKINDS[k].label});const mx=num(S.cfg.maxHR);if(mx&&b>=mx*0.95)z='Max';return z||'Below zones'}
+function hrPaint(){
+  let el=$('#hr-badge');
+  if(!HR.dev){if(el)el.remove();const l=$('#hr-live');if(l)l.innerHTML=hrLiveHTML();return}
+  if(!el){el=document.createElement('button');el.id='hr-badge';el.dataset.act='hr-badge';document.body.appendChild(el)}
+  const stale=!HR.bpm||Date.now()-HR.ts>8000;
+  el.innerHTML='❤️ <b>'+(stale?'--':HR.bpm)+'</b>'+(stale?'':' <span>'+esc(hrZone(HR.bpm))+'</span>');
+  const l=$('#hr-live');if(l)l.innerHTML=hrLiveHTML();
+}
+function hrLiveHTML(){
+  if(!HR.dev)return '<div class="sub">Not connected.</div>';
+  const stale=!HR.bpm||Date.now()-HR.ts>8000;
+  return '<div style="font-size:44px;font-weight:800;line-height:1.1">❤️ '+(stale?'--':HR.bpm)+' <span style="font-size:16px;font-weight:600">bpm</span></div><div class="sub">'+esc(HR.name||'Watch')+(stale?' · waiting for data…':' · '+esc(hrZone(HR.bpm)))+'</div>';
+}
+async function hrWake(on){
+  try{if(on){if(navigator.wakeLock&&!HR.lock){HR.lock=await navigator.wakeLock.request('screen');HR.lock.addEventListener('release',()=>{HR.lock=null})}}
+  else if(HR.lock){await HR.lock.release();HR.lock=null}}catch(e){}
+}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&HR.dev)hrWake(true)});
+setInterval(()=>{if(HR.dev)hrPaint()},4000);
+const HR_ERR={USER_CANCELLED:'',DEVICE_NOT_FOUND:'Watch not found. Turn on HR Data Broadcasts on the watch and keep it close.',BLUETOOTH_UNAVAILABLE:'Bluetooth isn’t available here. On iPhone open the app in Safari (not the home-screen icon) with the WebBLE extension on.',EXTENSION_NOT_INSTALLED:'WebBLE extension not active. Settings → Apps → Safari → Extensions → WebBLE → on, then open the app in Safari.',PERMISSION_DENIED:'Bluetooth permission denied. Allow it for WebBLE / Safari and try again.'};
+async function hrConnect(){
+  if(HR.busy)return;
+  if(typeof WebBLECore==='undefined'||!WebBLECore.WebBLE){toast('Bluetooth helper missing — update the app');return}
+  HR.busy=true;
+  try{
+    const ble=new WebBLECore.WebBLE();
+    const dev=await ble.requestDevice({filters:[{services:['heart_rate']}]});
+    toast('Connecting…');
+    await dev.connect();
+    HR.dev=dev;HR.name=dev.name||(dev.device&&dev.device.name)||'Watch';HR.bpm=null;HR.ts=0;
+    const cb=v=>{try{const f=v.getUint8(0);HR.bpm=(f&1)?v.getUint16(1,true):v.getUint8(1);HR.ts=Date.now();hrPaint()}catch(e){}};
+    HR.unsub=dev.subscribeAsync?await dev.subscribeAsync('heart_rate','heart_rate_measurement',cb):dev.subscribe('heart_rate','heart_rate_measurement',cb);
+    if(dev.on)dev.on('disconnected',r=>{if(r==='intentional')return;HR.dev=null;HR.bpm=null;hrWake(false);hrPaint();toast('Watch disconnected')});
+    hrWake(true);hrPaint();toast('Connected to '+HR.name);
+  }catch(e){
+    const msg=e&&e.code in HR_ERR?HR_ERR[e.code]:((e&&(e.suggestion||e.message))||String(e));
+    if(msg)toast(msg);
+  }finally{HR.busy=false}
+}
+function hrDisconnect(){
+  try{if(typeof HR.unsub==='function')HR.unsub()}catch(e){}
+  try{HR.dev&&HR.dev.disconnect()}catch(e){}
+  HR.dev=null;HR.bpm=null;HR.unsub=null;hrWake(false);hrPaint();toast('Watch disconnected');
+}
+function hrSection(){
+  return '<label class="lbl">Heart rate from watch (test)</label><div class="sub">Live heart rate over Bluetooth. Watch: Settings → HR Data Broadcasts → on. iPhone: open the app in Safari with the WebBLE extension on.</div>'
+    +'<div id="hr-live" style="margin-top:8px">'+hrLiveHTML()+'</div>'
+    +'<div class="row" style="margin-top:8px;gap:6px">'+(HR.dev?'<button class="btn sm danger" data-act="hr-off">Disconnect</button>':'<button class="btn sm primary" data-act="hr-connect">Connect watch</button>')+'</div>';
+}
+document.addEventListener('click',ev=>{
+  const a=ev.target.closest('[data-act]');if(!a)return;
+  switch(a.dataset.act){
+    case 'hr-connect':hrConnect().then(()=>{if($('#modal').classList.contains('on')&&$('#hr-live'))openSettings()});break;
+    case 'hr-off':hrDisconnect();if($('#hr-live'))openSettings();break;
+    case 'hr-badge':confirmModal('Disconnect '+(HR.name||'watch')+'?','Disconnect',()=>hrDisconnect());break;
+  }
+});
+/* ---------- DAILY: workout days, own tasks & habits, plan tomorrow, work days, books ---------- */
+const DY=()=>{const d=S.cfg.daily=S.cfg.daily||{};d.items=d.items||[];d.plans=d.plans||{};d.log=d.log||{};d.books=d.books||[];d.work=d.work||{};return d};
+const hardMode=()=>S.cfg.hardMode||'on';
+const isWork=ds=>!!DY().work[ds];
+const dyItem=id=>DY().items.find(x=>x.id===id);
+const DY_KINDS={tick:'✔️ Tick',min:'⏱️ Minutes (with timer)',amt:'🍽️ Amount (g, kg, ml…)',book:'📖 Book',custom:'🧩 Custom fields'};
+const DY_FEEL=[['great','😀'],['good','🙂'],['ok','😐'],['meh','😕']];
+function isWalkSess(s){const t=s.templateId&&tplById(s.templateId);return (t&&tplCat(t)==='walk')||(s.type==='run'&&/\bwalk/i.test(s.name||''))}
+const wkDone=ds=>S.sessions.some(s=>s.date===ds&&!isWalkSess(s));
+/* day status for workout grid: ok | rest | miss | fut | today */
+function wkStatus(ds){const t=todayStr();if(ds>t)return 'fut';if(wkDone(ds))return 'ok';if(isWork(ds))return 'rest';return ds===t?'today':'miss'}
+function streakOf(statusFn,firstDay){
+  const t=todayStr();let cur=0,d=t;
+  while(d>=firstDay){const s=statusFn(d);if(s==='ok')cur++;else if(s==='rest'||s==='off'||s==='today'){}else break;d=addDays(d,-1)}
+  let best=0,run=0;for(let x=firstDay;x<=t;x=addDays(x,1)){const s=statusFn(x);if(s==='ok'){run++;best=Math.max(best,run)}else if(s==='miss')run=0}
+  return {cur:cur,best:Math.max(best,cur)};
+}
+const firstSessDay=()=>S.sessions.reduce((m,s)=>s.date<m?s.date:m,todayStr());
+function gridHTML(statusFn,weeks){
+  weeks=weeks||12;const mon=mondayOf(new Date());const start=new Date(mon);start.setDate(start.getDate()-7*(weeks-1));
+  let g='<div class="dgrid" style="grid-template-columns:18px repeat('+weeks+',1fr)">';
+  for(let r=0;r<7;r++){g+='<span class="dl" style="grid-row:'+(r+1)+';grid-column:1">'+(r%2===0?DAYS[r][0]:'')+'</span>'}
+  for(let w=0;w<weeks;w++)for(let r=0;r<7;r++){const d=new Date(start);d.setDate(d.getDate()+w*7+r);const ds=ymd(d),st=statusFn(ds);
+    g+='<i class="'+st+(ds===todayStr()?' now':'')+'" style="grid-row:'+(r+1)+';grid-column:'+(w+2)+'" title="'+esc(fmtDate(ds,{day:'numeric',month:'short'}))+'"></i>'}
+  g+='</div><div class="row" style="justify-content:space-between;margin-top:4px"><span class="sub" style="font-size:11px">'+esc(fmtDate(ymd(start),{day:'numeric',month:'short'}))+'</span><span class="sub" style="font-size:11px">Today</span></div>';
+  return g;
+}
+const legend=extra=>'<div class="row" style="gap:12px;flex-wrap:wrap;margin-top:6px"><span class="sub"><i class="lg ok"></i> done</span><span class="sub"><i class="lg miss"></i> missed</span>'+(extra||'<span class="sub"><i class="lg rest"></i> work day / rest</span>')+'</div>';
+/* ----- items ----- */
+function dySched(ds){
+  const D=DY(),w=isWork(ds),p=D.plans[ds],ids=[],out=[];const dw=dow(parseYmd(ds));
+  const skip=(p&&p.skip)||[];
+  D.items.forEach(x=>{if(x.arch||!x.every)return;if(x.created&&ds<x.created)return;if(skip.indexOf(x.id)>=0)return;if(x.days&&x.days.length&&x.days.indexOf(dw)<0)return;if(w&&!x.onWork)return;ids.push(x.id)});
+  if(p)(p.ids||[]).forEach(id=>{const x=dyItem(id);if(x&&!x.arch&&ids.indexOf(id)<0)ids.push(id)});
+  ids.forEach(id=>out.push(dyItem(id)));
+  if(p)(p.extra||[]).forEach(e=>out.push(Object.assign({oneoff:true},e)));
+  return out;
+}
+const dyGoal=(x,ds)=>{const w=isWork(ds)&&x.wgoal!==''&&x.wgoal!=null?num(x.wgoal):num(x.goal);return w||0};
+const dyLog=(ds,id)=>((DY().log[ds]||{})[id])||{};
+function dyVal(x,ds){const l=dyLog(ds,x.id);if(x.kind==='book')return num(l.pages);if(x.kind==='custom'){const f=(x.fields||[])[0];return f?num((l.f||{})[f.n]):0}return num(l.v)}
+function dyDone(x,ds){
+  const l=dyLog(ds,x.id);if(x.kind==='tick')return !!l.done;
+  const g=dyGoal(x,ds),v=dyVal(x,ds);
+  if(x.kind==='book'&&l.fin)return true;
+  if(x.kind==='custom'&&!g)return Object.keys(l.f||{}).some(k=>String(l.f[k]).trim()!=='');
+  return g?v>=g:v>0;
+}
+function dyItemStatus(x){return ds=>{const t=todayStr();if(ds>t)return 'fut';if(x.created&&ds<x.created&&!dyDone(x,ds))return 'off';const sc=dySched(ds).some(y=>y.id===x.id);if(dyDone(x,ds))return 'ok';if(!sc)return 'off';return ds===t?'today':'miss'}}
+function dyFullStatus(ds){const t=todayStr();if(ds>t)return 'fut';const l=dySched(ds);if(!l.length)return 'off';if(l.every(x=>dyDone(x,ds)))return 'ok';return ds===t?'today':'miss'}
+function dyItemStats(x){
+  const first=x.created||todayStr(),fn=dyItemStatus(x);let done=0;
+  for(let d=first;d<=todayStr();d=addDays(d,1))if(fn(d)==='ok')done++;
+  let sch=0,ok=0;for(let i=0;i<30;i++){const d=addDays(todayStr(),-i);if(d<first)break;const s=fn(d);if(s==='ok'){ok++;sch++}else if(s==='miss')sch++}
+  return {done:done,st:streakOf(fn,first),pct:sch?Math.round(ok/sch*100):null};
+}
+function dyUnit(x){return x.kind==='min'?'min':x.kind==='book'?'pages':(x.unit||'')}
+function dyDesc(x){
+  const g=num(x.goal),wg=x.wgoal!==''&&x.wgoal!=null?num(x.wgoal):null;
+  let s=x.every?'Every day':'When planned';
+  if(x.every&&x.days&&x.days.length&&x.days.length<7)s=x.days.slice().sort().map(i=>DAYS[i]).join(', ');
+  if(g)s+=' · goal '+g+' '+dyUnit(x);
+  if(x.onWork)s+=' · work days'+(wg!=null?' '+wg+' '+dyUnit(x):'');
+  return s;
+}
+/* ----- input controls ----- */
+function dyCtl(x,ds){
+  const l=dyLog(ds,x.id),k=x.id,ok=dyDone(x,ds),g=dyGoal(x,ds);
+  const box='<button class="hchk'+(ok?' on':'')+'" data-act="dy-tick" data-id="'+k+'" data-d="'+ds+'" aria-label="Done">✓</button>';
+  const nm='<b>'+esc(x.name)+'</b>'+(x.oneoff?' <span class="sub">(one-off)</span>':'');
+  const inp=(f,val,ph,w)=>'<input inputmode="decimal" data-dy="'+k+'|'+f+'|'+ds+'" value="'+esc(val==null?'':val)+'" placeholder="'+esc(ph)+'" style="flex:0 0 '+(w||84)+'px;min-height:36px;padding:4px 8px">';
+  let body='';
+  if(x.kind==='min'){
+    const run=l.t0?'<span class="sub dy-run" data-t0="'+l.t0+'">⏱ running</span>':'';
+    body='<div class="row" style="gap:6px;margin-top:6px;align-items:center">'+inp('v',l.v,'min')+'<span class="sub">'+(g?'/ '+g+' min':'min')+'</span><button class="btn sm'+(l.t0?' primary':'')+'" data-act="dy-tmr" data-id="'+k+'" data-d="'+ds+'">'+(l.t0?'Stop':'▶ Timer')+'</button>'+run+'</div>';
+  }else if(x.kind==='amt'){
+    body='<div class="row" style="gap:6px;margin-top:6px;align-items:center">'+inp('v',l.v,'0')+'<span class="sub">'+esc(x.unit||'')+(g?' / '+g+' '+esc(x.unit||''):'')+'</span></div>';
+  }else if(x.kind==='book'){
+    body='<div style="margin-top:6px"><input type="text" list="dy-books" data-dy="'+k+'|title|'+ds+'" value="'+esc(l.title||x.lastTitle||'')+'" placeholder="Book title" style="min-height:36px;padding:4px 8px"></div>'
+      +'<div class="row" style="gap:6px;margin-top:6px;align-items:center;flex-wrap:wrap">'+inp('pages',l.pages,'pages',76)+'<span class="sub">pages'+(g?' / '+g:'')+'</span>'
+      +DY_FEEL.map(f=>'<button class="btn sm'+(l.feel===f[0]?' primary':'')+'" style="min-width:38px;padding:3px 6px" data-act="dy-feel" data-id="'+k+'" data-d="'+ds+'" data-v="'+f[0]+'">'+f[1]+'</button>').join('')+'</div>'
+      +'<label class="sub" style="display:flex;gap:6px;align-items:center;margin-top:6px"><input type="checkbox" data-act="dy-fin" data-id="'+k+'" data-d="'+ds+'"'+(l.fin?' checked':'')+'> Finished the book</label>';
+  }else if(x.kind==='custom'){
+    body='<div class="row" style="gap:6px;margin-top:6px;flex-wrap:wrap">'+(x.fields||[]).map((f,i)=>'<div style="display:flex;gap:4px;align-items:center"><span class="sub">'+esc(f.n)+'</span>'+inp('f:'+f.n,(l.f||{})[f.n],f.u||'',70)+'<span class="sub">'+esc(f.u||'')+(i===0&&g?' / '+g:'')+'</span></div>').join('')+'</div>';
+  }
+  const chart=x.oneoff?'':'<button class="btn sm" data-act="dy-chart" data-id="'+k+'" aria-label="Chart">📊</button>';
+  return '<div class="htask">'+box+'<div class="grow">'+nm+(x.kind==='tick'||x.oneoff?'':'<div class="sub">'+esc(dyDesc(x))+'</div>')+body+'</div><div style="display:flex;flex-direction:column;gap:4px">'+chart+'<button class="btn sm" data-act="dy-rm" data-id="'+k+'" data-d="'+ds+'" aria-label="Delete" style="color:var(--danger)"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg></button></div></div>';
+}
+const booksDL=()=>{const t=new Set(DY().books.map(b=>b.title));Object.values(DY().log).forEach(d=>Object.values(d).forEach(l=>{if(l&&l.title)t.add(l.title)}));return '<datalist id="dy-books">'+[...t].map(x=>'<option value="'+esc(x)+'">').join('')+'</datalist>'};
+/* ----- cards ----- */
+function todayPlanCard(){
+  const ds=todayStr(),l=dySched(ds),w=isWork(ds);
+  const done=l.filter(x=>dyDone(x,ds)).length;
+  let h='<div class="card"'+(w?' style="border:2px solid var(--mute)"':'')+'><div class="row between"><h2 style="margin:0">'+(w?'🧳 Work day':'Today’s plan')+'</h2><span class="sub">'+(l.length?done+' / '+l.length+' done':'')+'</span></div>';
+  if(w)h+='<div class="sub" style="margin-top:4px">Keep it small. Tick what you did and rest.</div>';
+  if(!l.length)h+='<div class="empty" style="padding:10px">Nothing planned for today.</div>';
+  h+=l.map(x=>dyCtl(x,ds)).join('');
+  h+='<div class="row" style="gap:6px;margin-top:10px;flex-wrap:wrap"><button class="btn sm" data-act="dy-work" data-d="'+ds+'">'+(w?'Not a work day':'🧳 Today is a work day')+'</button><button class="btn sm" data-act="dy-plan" data-d="'+ds+'">Edit today</button><button class="btn sm primary" data-act="dy-plan" data-d="'+addDays(ds,1)+'">Plan tomorrow</button></div>';
+  return h+booksDL()+'</div>';
+}
+function dailyBanners(){
+  const n=new Date(),hr=n.getHours(),t=todayStr(),tm=addDays(t,1),D=DY();let h='';
+  const late=hr>=21||hr<H_GRACE,dsToday=hr<H_GRACE?addDays(t,-1):t,dsTm=addDays(dsToday,1);
+  if(late&&!isWork(dsToday)&&!D.plans[dsTm])h+='<div class="card" style="border:2px solid var(--accent)"><b>🗓️ Plan tomorrow</b><div class="sub" style="margin-top:4px">2 minutes: choose what you’ll do tomorrow.</div><button class="btn sm primary" style="margin-top:8px" data-act="dy-plan" data-d="'+dsTm+'">Plan '+esc(fmtDate(dsTm,{weekday:'long'}))+'</button></div>';
+  if(hr>=6&&hr<12&&isWork(t)&&!D.plans[tm])h+='<div class="card" style="border:2px solid var(--accent)"><b>🧳 Work day — plan tomorrow now</b><div class="sub" style="margin-top:4px">You’ll be home late tonight, so do it before you leave.</div><button class="btn sm primary" style="margin-top:8px" data-act="dy-plan" data-d="'+tm+'">Plan '+esc(fmtDate(tm,{weekday:'long'}))+'</button></div>';
+  if(hr>=6&&hr<12&&!D.plans[t]&&!dySched(t).length&&!isWork(t))h+='<div class="card"><b>No plan for today yet</b><button class="btn sm" style="margin-top:8px" data-act="dy-plan" data-d="'+t+'">Plan today</button></div>';
+  if(hr>=19&&!isWork(t)){const left=dySched(t).filter(x=>!dyDone(x,t)).map(x=>x.name);if(left.length)h+='<div class="card" style="border:2px solid var(--core)"><b>'+left.length+' left today</b><div class="sub" style="margin-top:4px">'+esc(left.join(' · '))+'</div></div>'}
+  return h;
+}
+function workoutDaysCard(){
+  const first=firstSessDay(),st=streakOf(wkStatus,first),t=todayStr();
+  let tot=0;const ms=t.slice(0,8)+'01';let mo=0;
+  for(let d=first;d<=t;d=addDays(d,1))if(wkStatus(d)==='ok'){tot++;if(d>=ms)mo++}
+  return '<div class="card"><h2>Workout days</h2>'+gridHTML(wkStatus,12)+legend()
+    +'<div class="stats" style="margin-top:10px"><div class="stat"><b>'+tot+'</b><span>days completed</span></div><div class="stat"><b>🔥 '+st.cur+'</b><span>current streak</span></div><div class="stat"><b>'+st.best+'</b><span>best streak</span></div></div>'
+    +'<div class="sub" style="margin-top:6px">This month: <b style="color:var(--ink)">'+mo+'</b> workout days. A workout or run makes the day green; work days without training stay grey and don’t break your streak.</div></div>';
+}
+function itemsCard(){
+  const D=DY(),t=todayStr(),act=D.items.filter(x=>!x.arch),hab=act.filter(x=>x.every),tasks=act.filter(x=>!x.every);
+  const row=x=>{const s=dyItemStats(x),sc=dySched(t).some(y=>y.id===x.id),ok=dyDone(x,t);
+    const box=x.kind==='tick'&&sc?'<button class="hchk'+(ok?' on':'')+'" data-act="dy-tick" data-id="'+x.id+'" data-d="'+t+'">✓</button>':'<span class="hchk'+(ok?' on':'')+'" style="'+(sc?'':'opacity:.35')+'">✓</span>';
+    return '<div class="htask">'+box+'<div class="grow"><button class="ex-main" data-act="dy-edit" data-id="'+x.id+'"><b>'+esc(x.name)+'</b></button><div class="sub">'+esc(dyDesc(x))+(sc?'':' · not today')+'</div><div class="sub">✅ '+s.done+' day'+(s.done===1?'':'s')+' · 🔥 '+s.st.cur+(s.pct!=null?' · '+s.pct+'% (30 d)':'')+'</div></div><button class="btn sm" data-act="dy-chart" data-id="'+x.id+'" aria-label="Chart">📊</button></div>'};
+  let h='<div class="card"><div class="row between"><h2 style="margin:0">Habits</h2><button class="btn sm primary" data-act="dy-new" data-every="1">+ Habit</button></div><div class="sub">Every day (or the days you choose).</div>';
+  h+=hab.length?hab.map(row).join(''):'<div class="empty" style="padding:10px">No habits yet. Example: “Plan tomorrow”.</div>';
+  h+='</div><div class="card"><div class="row between"><h2 style="margin:0">Tasks</h2><button class="btn sm primary" data-act="dy-new" data-every="0">+ Task</button></div><div class="sub">Only on days you plan them.</div>';
+  h+=tasks.length?tasks.map(row).join(''):'<div class="empty" style="padding:10px">No tasks yet. Example: “Study – 120 min”, “Read”.</div>';
+  return h+'</div>';
+}
+function fullDaysCard(){
+  const first=Object.keys(DY().plans).concat(DY().items.map(x=>x.created||todayStr())).sort()[0]||todayStr();
+  const st=streakOf(dyFullStatus,first);let tot=0;for(let d=first;d<=todayStr();d=addDays(d,1))if(dyFullStatus(d)==='ok')tot++;
+  return '<div class="card"><h2>Full days</h2><div class="sub">Green when you finished everything planned that day.</div>'+gridHTML(dyFullStatus,12)+legend('<span class="sub"><i class="lg off"></i> nothing planned</span>')
+    +'<div class="stats" style="margin-top:10px"><div class="stat"><b>'+tot+'</b><span>full days</span></div><div class="stat"><b>🔥 '+st.cur+'</b><span>streak</span></div><div class="stat"><b>'+st.best+'</b><span>best</span></div></div></div>';
+}
+function planCard(){
+  const t=todayStr(),tm=addDays(t,1),p=DY().plans[tm],n=dySched(tm).length;
+  return '<div class="card"><div class="row between"><div><h2 style="margin:0">Tomorrow</h2><div class="sub">'+esc(fmtDate(tm,{weekday:'long',day:'numeric',month:'short'}))+(isWork(tm)?' · 🧳 work day':'')+' · '+(p?n+' item'+(n===1?'':'s')+' planned ✓':'not planned yet')+'</div></div><button class="btn sm '+(p?'':'primary')+'" data-act="dy-plan" data-d="'+tm+'">'+(p?'Edit':'Plan')+'</button></div></div>';
+}
+function booksCard(){
+  const b=DY().books.filter(x=>x.fin).sort((a,c)=>a.fin<c.fin?1:-1),cur=DY().books.filter(x=>!x.fin);
+  if(!b.length&&!cur.length)return '';
+  return '<div class="card"><h2>Books</h2>'+(cur.length?'<div class="sub" style="margin-bottom:4px">Reading now</div>'+cur.map(x=>'<div class="sess"><b>📖 '+esc(x.title)+'</b><div class="sub">'+x.pages+' pages so far</div></div>').join(''):'')
+    +(b.length?'<div class="sub" style="margin:8px 0 4px">Finished</div>'+b.map(x=>'<div class="sess"><b>✅ '+esc(x.title)+'</b><div class="sub">Finished '+esc(fmtDate(x.fin,{day:'numeric',month:'short',year:'numeric'}))+' · '+x.pages+' pages</div></div>').join(''):'')+'</div>';
+}
+function viewDaily(){
+  return dailyBanners()+workoutDaysCard()+planCard()+itemsCard()+fullDaysCard()+hSleepCard()+booksCard();
+}
+/* ----- books bookkeeping ----- */
+function dyBooksSync(){
+  const D=DY(),m={};D.books.forEach(b=>{m[b.title.toLowerCase()]={title:b.title,pages:0,fin:b.finManual?b.fin:null,finManual:b.finManual,start:null}});
+  Object.keys(D.log).sort().forEach(ds=>{const L=D.log[ds];Object.keys(L).forEach(id=>{const l=L[id];if(!l||!l.title)return;const k=l.title.trim().toLowerCase();if(!k)return;
+    const b=m[k]=m[k]||{title:l.title.trim(),pages:0,fin:null,start:null};b.pages+=num(l.pages);if(!b.start)b.start=ds;if(l.fin)b.fin=ds})});
+  D.books=Object.values(m).filter(b=>b.pages>0||b.fin);
+}
+/* ----- chart modal ----- */
+function dyChart(id){
+  const x=dyItem(id);if(!x)return;const s=dyItemStats(x),fn=dyItemStatus(x);
+  let rec='';for(let i=0;i<14;i++){const d=addDays(todayStr(),-i);const st=fn(d);if(st==='off'||st==='fut')continue;const l=dyLog(d,x.id);
+    const v=x.kind==='tick'?(st==='ok'?'done':'–'):x.kind==='book'?((l.title?l.title+' · ':'')+num(l.pages)+' p'+(l.fin?' · finished':'')):x.kind==='custom'?Object.keys(l.f||{}).map(k=>k+' '+l.f[k]).join(', '):(num(l.v)+' '+dyUnit(x));
+    rec+='<div class="row between" style="padding:4px 0;border-bottom:1px solid var(--line)"><span class="sub">'+esc(fmtDate(d,{weekday:'short',day:'numeric',month:'short'}))+'</span><span'+(st==='ok'?' style="color:var(--ok);font-weight:700"':'')+'>'+esc(v||'–')+'</span></div>'}
+  openModal('<h2>'+esc(x.name)+'</h2><div class="sub">'+esc(dyDesc(x))+'</div>'+gridHTML(fn,12)+legend('<span class="sub"><i class="lg off"></i> not planned</span>')
+    +'<div class="stats" style="margin-top:10px"><div class="stat"><b>'+s.done+'</b><span>days completed</span></div><div class="stat"><b>🔥 '+s.st.cur+'</b><span>streak</span></div><div class="stat"><b>'+(s.pct!=null?s.pct+'%':'–')+'</b><span>last 30 days</span></div></div>'
+    +(rec?'<h2 style="font-size:15px;margin-top:14px">Last 2 weeks</h2>'+rec:'')
+    +'<div class="row" style="margin-top:14px"><button class="btn" data-act="dy-edit" data-id="'+x.id+'">Edit</button><span class="grow"></span><button class="btn primary" data-act="close">Close</button></div>');
+}
+/* ----- editor ----- */
+function dyEdit(id,every){
+  const x=(id&&dyItem(id))||{id:'',name:'',kind:'tick',unit:'',goal:'',wgoal:'',every:!!every,onWork:false,fields:[{n:'',u:''}],days:[]};
+  const f=(x.fields&&x.fields.length?x.fields:[{n:'',u:''}]).concat([{n:'',u:''},{n:'',u:''}]).slice(0,3);
+  openModal('<h2>'+(id?'Edit':'New')+' '+(x.every?'habit':'task')+'</h2><input type="hidden" id="dy-id" value="'+esc(x.id)+'">'
+    +'<label class="lbl">Name</label><input type="text" id="dy-name" value="'+esc(x.name)+'" placeholder="e.g. Study, Read, Protein, Plan tomorrow">'
+    +'<label class="lbl">What do you record?</label><select id="dy-kind" data-act="dy-kindchg">'+Object.keys(DY_KINDS).map(k=>'<option value="'+k+'"'+(x.kind===k?' selected':'')+'>'+DY_KINDS[k]+'</option>').join('')+'</select>'
+    +'<div id="dy-amt" style="display:'+(x.kind==='amt'?'block':'none')+'"><label class="lbl">Unit</label><input type="text" id="dy-unit" list="dy-units" value="'+esc(x.unit||'')+'" placeholder="g, kg, ml, L, kcal…"><datalist id="dy-units">'+['g','kg','ml','L','kcal','reps','km','glasses'].map(u=>'<option value="'+u+'">').join('')+'</datalist></div>'
+    +'<div id="dy-cus" style="display:'+(x.kind==='custom'?'block':'none')+'"><label class="lbl">Your fields (name + unit)</label>'+f.map((v,i)=>'<div class="row" style="gap:6px;margin-top:6px"><input type="text" class="dy-fn" value="'+esc(v.n)+'" placeholder="Field '+(i+1)+(i===0?' (e.g. Protein)':'')+'"><input type="text" class="dy-fu" value="'+esc(v.u)+'" placeholder="unit" style="flex:0 0 90px"></div>').join('')+'<div class="hint">The goal applies to the first field.</div></div>'
+    +'<div id="dy-goals" style="display:'+(x.kind==='tick'?'none':'block')+'"><div class="row3" style="grid-template-columns:1fr 1fr"><div><label class="lbl">Goal (optional)</label><input inputmode="decimal" id="dy-goal" value="'+esc(x.goal||'')+'" placeholder="e.g. 120"></div><div><label class="lbl">Work-day goal</label><input inputmode="decimal" id="dy-wgoal" value="'+esc(x.wgoal==null?'':x.wgoal)+'" placeholder="e.g. 20"></div></div><div class="hint">The box turns green when you reach the goal. No goal = any amount counts.</div></div>'
+    +'<label class="sub" style="display:flex;gap:8px;align-items:center;margin-top:12px"><input type="checkbox" id="dy-every"'+(x.every?' checked':'')+'> Habit: show it every day automatically</label>'
+    +'<div class="row" style="flex-wrap:wrap;gap:6px;margin-top:6px">'+DAYS.map((d,i)=>'<label class="sub" style="display:flex;gap:4px;align-items:center"><input type="checkbox" class="dy-day" value="'+i+'"'+(!x.days||!x.days.length||x.days.indexOf(i)>=0?' checked':'')+'>'+d+'</label>').join('')+'</div>'
+    +'<label class="sub" style="display:flex;gap:8px;align-items:center;margin-top:10px"><input type="checkbox" id="dy-onwork"'+(x.onWork?' checked':'')+'> Also on work days</label>'
+    +'<div class="row" style="margin-top:16px">'+(id?'<button class="btn danger" data-act="dy-del" data-id="'+esc(id)+'">Delete</button>':'')+'<span class="grow"></span><button class="btn" data-act="close">Cancel</button><button class="btn primary" data-act="dy-save">Save</button></div>');
+}
+/* ----- plan modal ----- */
+let DYP=null;
+function dyPlanOpen(ds){
+  const D=DY(),p=D.plans[ds]||{ids:[],extra:[]};
+  if(!DYP||DYP.ds!==ds)DYP={ds:ds,ids:(p.ids||[]).slice(),extra:JSON.parse(JSON.stringify(p.extra||[])),work:isWork(ds)};
+  const hab=D.items.filter(x=>!x.arch&&x.every),tasks=D.items.filter(x=>!x.arch&&!x.every),dw=dow(parseYmd(ds));
+  const habOn=x=>(!x.days||!x.days.length||x.days.indexOf(dw)>=0)&&(!DYP.work||x.onWork);
+  let h='<h2>Plan '+esc(fmtDate(ds,{weekday:'long',day:'numeric',month:'short'}))+'</h2>'
+    +'<label class="sub" style="display:flex;gap:8px;align-items:center;margin-top:8px;font-size:15px"><input type="checkbox" data-act="dyp-work"'+(DYP.work?' checked':'')+'> 🧳 Work day (only work-day items, smaller goals)</label>';
+  h+='<label class="lbl">Tasks</label>'+(tasks.length?tasks.map(x=>'<label class="sub" style="display:flex;gap:8px;align-items:center;padding:6px 0;font-size:15px;color:var(--ink)"><input type="checkbox" data-act="dyp-tog" data-id="'+x.id+'"'+(DYP.ids.indexOf(x.id)>=0?' checked':'')+'> '+esc(x.name)+'<span class="sub">'+(num(x.goal)?' · '+(DYP.work&&x.wgoal!==''&&x.wgoal!=null?x.wgoal:x.goal)+' '+esc(dyUnit(x)):'')+'</span></label>').join(''):'<div class="sub">No tasks yet.</div>')
+    +'<button class="btn sm ghost" style="margin-top:4px" data-act="dy-new" data-every="0" data-fromplan="1">+ New task</button>';
+  h+='<label class="lbl">One-off items (just for this day)</label>'+DYP.extra.map((e,i)=>'<div class="row" style="gap:6px;padding:4px 0"><span class="grow">'+esc(e.name)+' <span class="sub">'+esc(DY_KINDS[e.kind].split(' ')[0])+(num(e.goal)?' '+e.goal+' '+esc(e.kind==='min'?'min':e.unit||''):'')+'</span></span><button class="btn sm" style="color:var(--danger)" data-act="dyp-xdel" data-i="'+i+'" aria-label="Delete"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg></button></div>').join('')
+    +'<div class="row" style="gap:6px;margin-top:4px;flex-wrap:wrap"><input type="text" id="dyp-xn" placeholder="e.g. Buy groceries" style="flex:1 1 140px"><select id="dyp-xk" style="flex:0 0 110px">'+Object.keys(DY_KINDS).filter(k=>k!=='custom').map(k=>'<option value="'+k+'">'+DY_KINDS[k].split(' (')[0]+'</option>').join('')+'</select><input inputmode="decimal" id="dyp-xg" placeholder="goal" style="flex:0 0 64px"><input type="text" id="dyp-xu" placeholder="unit" style="flex:0 0 60px"><button class="btn sm" data-act="dyp-xadd">Add</button></div>';
+  if(hab.length)h+='<label class="lbl">Habits (automatic)</label><div class="sub">'+hab.map(x=>(habOn(x)?'✓ ':'– ')+esc(x.name)).join(' · ')+'</div>';
+  const prev=addDays(ds,-1);
+  h+='<div class="row" style="margin-top:16px;gap:6px;flex-wrap:wrap"><button class="btn" data-act="dyp-same" data-from="'+prev+'">Same as '+esc(fmtDate(prev,{weekday:'short'}))+'</button><span class="grow"></span><button class="btn" data-act="dyp-cancel">Cancel</button><button class="btn primary" data-act="dyp-save">Save plan</button></div>';
+  openModal(h);
+}
+/* ----- monthly report ----- */
+function dailyMonthReport(){
+  const y=S.prog.rm.y,m=S.prog.rm.m,a=y+'-'+pad(m+1)+'-01',last=new Date(y,m+1,0).getDate(),b=y+'-'+pad(m+1)+'-'+pad(last),t=todayStr(),end=b<t?b:t;
+  if(a>t)return '';
+  let wk=0,work=0,full=0,fullN=0,days=0;
+  for(let d=a;d<=end;d=addDays(d,1)){days++;const s=wkStatus(d);if(s==='ok')wk++;if(isWork(d))work++;const f=dyFullStatus(d);if(f==='ok'){full++;fullN++}else if(f==='miss')fullN++}
+  const sl=Object.keys(hS().sleep).filter(k=>k>=a&&k<=b).map(k=>num(hS().sleep[k]));
+  const items=DY().items.filter(x=>!x.arch).map(x=>{const fn=dyItemStatus(x);let ok=0,sch=0;for(let d=a;d<=end;d=addDays(d,1)){const s=fn(d);if(s==='ok'){ok++;sch++}else if(s==='miss')sch++}return {x:x,ok:ok,sch:sch}}).filter(r=>r.sch);
+  const books=DY().books.filter(x=>x.fin&&x.fin>=a&&x.fin<=b);
+  let pages=0;Object.keys(DY().log).forEach(d=>{if(d>=a&&d<=b)Object.values(DY().log[d]).forEach(l=>{pages+=num(l&&l.pages)})});
+  let h='<div class="card"><h2>Daily · '+esc(new Date(y,m,1).toLocaleDateString(undefined,{month:'long'}))+'</h2>'
+    +'<div class="stats"><div class="stat"><b>'+wk+'/'+days+'</b><span>workout days</span></div><div class="stat"><b>'+work+'</b><span>work days</span></div><div class="stat"><b>'+(fullN?full+'/'+fullN:'–')+'</b><span>full days</span></div></div>'
+    +'<div class="stats" style="margin-top:8px"><div class="stat"><b>'+(sl.length?r1(sl.reduce((p,q)=>p+q,0)/sl.length)+' h':'–')+'</b><span>avg sleep</span></div><div class="stat"><b>'+books.length+'</b><span>books finished</span></div><div class="stat"><b>'+pages+'</b><span>pages read</span></div></div>';
+  if(items.length)h+='<h2 style="font-size:15px;margin-top:14px">Habits & tasks</h2>'+items.map(r=>{const p=Math.round(r.ok/r.sch*100);return '<div style="margin:6px 0"><div class="row between"><span>'+esc(r.x.name)+'</span><span class="sub">'+r.ok+'/'+r.sch+' · <b style="color:var(--ink)">'+p+'%</b></span></div><div class="bar"><i style="width:'+p+'%;background:'+(p>=80?'var(--ok)':p>=50?'var(--core)':'var(--danger)')+'"></i></div></div>'}).join('');
+  if(books.length)h+='<div class="sub" style="margin-top:10px">Finished: '+books.map(x=>esc(x.title)).join(', ')+'</div>';
+  h+='<h2 style="font-size:15px;margin-top:14px">Sleep</h2>'+hSleepChart(y,m);
+  return h+'</div>';
+}
+function dyWeekPct(mk){let ok=0,sch=0;for(let i=0;i<7;i++){const d=addDays(mk,i);if(d>todayStr())break;dySched(d).forEach(x=>{sch++;if(dyDone(x,d))ok++})}return sch?Math.round(ok/sch*100):null}
+function dyWeekWorkout(mk){let n=0;for(let i=0;i<7;i++)if(wkDone(addDays(mk,i)))n++;return n}
+function dyWeekMins(mk){const o={};for(let i=0;i<7;i++){const d=addDays(mk,i);dySched(d).forEach(x=>{if(x.kind==='min'&&!x.oneoff)o[x.name]=(o[x.name]||0)+num(dyLog(d,x.id).v)})}return o}
+/* ----- migration ----- */
+function dailyMigrate(){
+  const D=DY(),H=S.cfg.habits;
+  if(H&&H.list)H.list.forEach(h=>{if(D.items.some(x=>x.from===h.id))return;
+    const it={id:'dy_'+uid(),from:h.id,name:h.name,kind:h.type==='num'?'amt':'tick',unit:h.unit||'',goal:h.type==='num'?h.target:'',wgoal:'',every:h.freq!=='week',days:h.freq==='days'?(h.days||[]):[],onWork:false,created:todayStr()};
+    if(/plan tomorrow/i.test(h.name))it.onWork=true;
+    D.items.push(it);
+    Object.keys(H.log||{}).forEach(ds=>{const v=H.log[ds][h.id];if(v==null||v===false)return;const L=D.log[ds]=D.log[ds]||{};L[it.id]=it.kind==='tick'?{done:true}:{v:num(v)};if(ds<it.created)it.created=ds})});
+  if(!tplById('tpl_wmorn')){const ex=S.cfg.exercises||[],f=n=>ex.find(e=>e.name.toLowerCase()===n.toLowerCase());
+    S.cfg.templates.push({id:'tpl_wmorn',cat:'home',name:'Work-day morning (15 min)',type:'mobility',runKind:'easy',targetKm:'',focus:[],items:[['Cat-cow',1,'10'],['Dead bug',2,'10'],['Glute bridge',2,'15'],['Plank',2,'30'],['Hip flexor stretch',1,'45'],['Deep squat hold',1,'30']].map(x=>{const e=f(x[0]);return e?{exId:e.id,sets:x[1],reps:x[2]}:null}).filter(Boolean)})}
+  const h=hS();
+  if(h.active){hEnd(h.active,'removed',hToday(),[]);h.pending=null}
+  S.cfg.hardMode='removed';
+}
+/* ----- settings section ----- */
+function hardSection(){
+  const m=hardMode(),n=hS().attempts.length;
+  if(m==='removed')return '<label class="lbl">75 Hard</label><div class="sub">Removed. Your data ('+n+' attempt'+(n===1?'':'s')+', days, sleep) is kept on this phone and in your backup.</div><div class="row" style="margin-top:8px;gap:6px;flex-wrap:wrap"><button class="btn sm" data-act="hd-hist">View history</button><button class="btn sm" data-act="hd-mode" data-v="on">Bring back 75 Hard</button></div>';
+  return '<label class="lbl">75 Hard</label><div class="sub">'+(m==='hidden'?'Hidden: the tab is not shown.':'Shown as a tab.')+'</div><div class="row" style="margin-top:8px;gap:6px;flex-wrap:wrap">'+(m==='hidden'?'<button class="btn sm" data-act="hd-mode" data-v="on">Show tab</button>':'<button class="btn sm" data-act="hd-mode" data-v="hidden">Hide tab</button>')+'<button class="btn sm danger" data-act="hd-remove">Remove 75 Hard</button></div>';
+}
+setInterval(()=>{document.querySelectorAll('.dy-run').forEach(el=>{const s=Math.floor((Date.now()-num(el.dataset.t0))/1000);el.textContent='⏱ '+Math.floor(s/60)+':'+pad(s%60)})},1000);
+/* ----- events ----- */
+function dySet(ds,id,fn){const D=DY(),L=D.log[ds]=D.log[ds]||{},l=L[id]=L[id]||{};fn(l);saveCfg()}
+function dyAfter(){if($('#modal').classList.contains('on')&&DYP)return;render()}
+document.addEventListener('click',ev=>{
+  const a=ev.target.closest('[data-act]');if(!a)return;const act=a.dataset.act,d=a.dataset;
+  if(act.indexOf('dy')!==0&&act.indexOf('hd-')!==0)return;
+  const D=DY();
+  switch(act){
+    case 'dy-tick':{const x=dyItem(d.id)||((D.plans[d.d]||{}).extra||[]).find(e=>e.id===d.id);if(!x)break;
+      dySet(d.d,d.id,l=>{if(x.kind==='tick')l.done=!l.done;else if(dyDone(x,d.d)){l.done=false;if(x.kind==='min'||x.kind==='amt')l.v='';if(x.kind==='book'){l.fin=false;l.pages=''}if(x.kind==='custom')l.f={}}else{const g=dyGoal(x,d.d);if(x.kind==='min'||x.kind==='amt')l.v=g||1;else if(x.kind==='book')l.pages=g||num(l.pages)||1;else if(x.kind==='custom'){const f=(x.fields||[])[0];if(f){l.f=l.f||{};l.f[f.n]=g||1}}}});
+      dyBooksSync();saveCfg();render();break}
+    case 'dy-tmr':dySet(d.d,d.id,l=>{if(l.t0){l.v=r1(num(l.v)+(Date.now()-l.t0)/60000);l.v=Math.round(l.v);delete l.t0;toast('Added to '+(dyItem(d.id)||{name:'task'}).name)}else l.t0=Date.now()});render();break;
+    case 'dy-feel':dySet(d.d,d.id,l=>{l.feel=l.feel===d.v?null:d.v});render();break;
+    case 'dy-fin':dySet(d.d,d.id,l=>{l.fin=!l.fin});{const x=dyItem(d.id);if(x&&dyLog(d.d,d.id).fin){x.lastTitle=''}}dyBooksSync();saveCfg();render();if(dyLog(d.d,d.id).fin)toast('📚 Added to your finished books');break;
+    case 'dy-work':D.work[d.d]=!D.work[d.d];if(!D.work[d.d])delete D.work[d.d];saveCfg();render();break;
+    case 'dy-chart':dyChart(d.id);break;
+    case 'dy-rm':{const x=dyItem(d.id),ex=((D.plans[d.d]||{}).extra||[]).find(e=>e.id===d.id);const nm=(x||ex||{}).name||'item';
+      let h='<h2>Remove “'+esc(nm)+'”</h2><div style="margin-top:10px">'
+        +'<button class="btn block" data-act="dy-rm-day" data-id="'+d.id+'" data-d="'+d.d+'">Remove from '+(d.d===todayStr()?'today':esc(fmtDate(d.d,{weekday:'long'})))+' only</button>';
+      if(x)h+='<button class="btn block danger" style="margin-top:8px" data-act="dy-del" data-id="'+d.id+'">Delete this '+(x.every?'habit':'task')+' completely</button><div class="hint">“Remove from today” keeps it for other days. “Delete completely” stops it everywhere; its past history stays in your backup.</div>';
+      openModal(h+'</div><button class="btn block" style="margin-top:10px" data-act="close">Cancel</button>');break}
+    case 'dy-rm-day':{const p=D.plans[d.d]=D.plans[d.d]||{ids:[],extra:[]};p.ids=(p.ids||[]).filter(i=>i!==d.id);p.extra=(p.extra||[]).filter(e=>e.id!==d.id);
+      const x=dyItem(d.id);if(x&&x.every){p.skip=p.skip||[];if(p.skip.indexOf(d.id)<0)p.skip.push(d.id)}
+      saveCfg();closeModal();render();toast('Removed from '+(d.d===todayStr()?'today':fmtDate(d.d,{weekday:'long'})));break}
+    case 'dy-new':if(d.fromplan)DYP.reopen=true;dyEdit(null,d.every==='1');break;
+    case 'dy-edit':dyEdit(d.id);break;
+    case 'dy-kindchg':break;
+    case 'dy-save':{
+      const name=$('#dy-name').value.trim();if(!name){toast('Give it a name');break}
+      const kind=$('#dy-kind').value,id=$('#dy-id').value,old=id&&dyItem(id);
+      const fields=kind==='custom'?[...document.querySelectorAll('.dy-fn')].map((el,i)=>({n:el.value.trim(),u:document.querySelectorAll('.dy-fu')[i].value.trim()})).filter(f=>f.n):[];
+      if(kind==='custom'&&!fields.length){toast('Add at least one field');break}
+      const days=[...document.querySelectorAll('.dy-day:checked')].map(x=>+x.value);
+      const o=Object.assign(old||{id:'dy_'+uid(),created:todayStr()},{name:name,kind:kind,unit:kind==='amt'?$('#dy-unit').value.trim():'',goal:kind==='tick'?'':$('#dy-goal').value.trim(),wgoal:kind==='tick'?'':$('#dy-wgoal').value.trim(),every:$('#dy-every').checked,days:days.length===7?[]:days,onWork:$('#dy-onwork').checked,fields:fields});
+      if(!old)D.items.push(o);saveCfg();
+      if(DYP&&DYP.reopen){DYP.reopen=false;if(!o.every&&DYP.ids.indexOf(o.id)<0)DYP.ids.push(o.id);dyPlanOpen(DYP.ds);break}
+      closeModal();render();toast('Saved');break}
+    case 'dy-del':confirmModal('Delete “'+(dyItem(d.id)||{}).name+'”? Its history is kept in your backup but no longer shown.','Delete',()=>{const x=dyItem(d.id);if(x)x.arch=true;saveCfg();render()});break;
+    case 'dy-plan':DYP=null;dyPlanOpen(d.d);break;
+    case 'dyp-work':DYP.work=a.checked;if(DYP.work)DYP.ids=DYP.ids.filter(id=>{const x=dyItem(id);return x&&x.onWork});dyPlanOpen(DYP.ds);if(DYP.work)toast('Kept only tasks marked “also on work days”');break;
+    case 'dyp-tog':{const i=DYP.ids.indexOf(d.id);if(a.checked&&i<0)DYP.ids.push(d.id);if(!a.checked&&i>=0)DYP.ids.splice(i,1);break}
+    case 'dyp-xadd':{const n=$('#dyp-xn').value.trim();if(!n){toast('Type a name');break}DYP.extra.push({id:'x_'+uid(),name:n,kind:$('#dyp-xk').value,goal:$('#dyp-xg').value.trim(),unit:$('#dyp-xu').value.trim()});dyPlanOpen(DYP.ds);break}
+    case 'dyp-xdel':DYP.extra.splice(+d.i,1);dyPlanOpen(DYP.ds);break;
+    case 'dyp-same':{const p=D.plans[d.from];if(!p){toast('Nothing planned on '+fmtDate(d.from,{weekday:'long'}));break}DYP.ids=(p.ids||[]).slice();DYP.extra=(p.extra||[]).map(e=>Object.assign({},e,{id:'x_'+uid()}));dyPlanOpen(DYP.ds);toast('Copied');break}
+    case 'dyp-cancel':DYP=null;closeModal();break;
+    case 'dyp-save':{const ds=DYP.ds;D.plans[ds]={ids:DYP.ids.slice(),extra:DYP.extra.slice(),skip:((D.plans[ds]||{}).skip||[]).slice(),at:Date.now()};if(DYP.work)D.work[ds]=true;else delete D.work[ds];
+      const pt=D.items.find(x=>!x.arch&&x.every&&x.kind==='tick'&&/plan tomorrow/i.test(x.name));const today=new Date().getHours()<H_GRACE?addDays(todayStr(),-1):todayStr();
+      if(pt&&ds>today)dySet(today,pt.id,l=>{l.done=true});
+      DYP=null;saveCfg();closeModal();render();toast('Plan saved ✓');break}
+    case 'hd-mode':S.cfg.hardMode=d.v;saveCfg();closeModal();if(d.v==='on'){S.tab='75'}else if(S.tab==='75')S.tab='daily';render();toast(d.v==='on'?'75 Hard is back':'75 Hard hidden');break;
+    case 'hd-remove':confirmModal('Remove 75 Hard? The current attempt ends and the tab disappears. All your data stays saved and you can bring it back from Settings.','Remove',()=>{const h=hS();if(h.active){hEnd(h.active,'removed',hToday(),[]);h.pending=null}S.cfg.hardMode='removed';if(S.tab==='75')S.tab='daily';saveCfg();render();toast('75 Hard removed — data kept')});break;
+    case 'hd-hist':{const c=hAttemptsCard();openModal('<h2>75 Hard history</h2><div class="sub">Read-only. Tap an attempt to see its days.</div>'+(c||'<div class="empty">No attempts.</div>')+'<button class="btn block" style="margin-top:10px" data-act="close">Close</button>');break}
+  }
+});
+document.addEventListener('change',ev=>{const el=ev.target;if(el.id==='dy-kind'){const k=el.value;$('#dy-amt').style.display=k==='amt'?'block':'none';$('#dy-cus').style.display=k==='custom'?'block':'none';$('#dy-goals').style.display=k==='tick'?'none':'block'}});
+function dyField(e){
+  const t=e.target,k=t.dataset&&t.dataset.dy;if(!k)return;const [id,f,ds]=k.split('|');
+  dySet(ds,id,l=>{const v=t.value;if(f==='title')l.title=v;else if(f.indexOf('f:')===0){l.f=l.f||{};l.f[f.slice(2)]=v.trim()===''?'':num(v)}else l[f]=v.trim()===''?'':num(v)});
+  if(f==='title'){const x=dyItem(id);if(x){x.lastTitle=t.value;saveCfg()}}
+  if(e.type==='change'){dyBooksSync();saveCfg();render()}
+}
+document.addEventListener('input',dyField);document.addEventListener('change',dyField);
 /* ---------- events ---------- */
 document.addEventListener('click',e=>{
   const a=e.target.closest('[data-act]');
