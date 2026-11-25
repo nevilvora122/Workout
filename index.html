@@ -1560,10 +1560,10 @@ const resolveTpl=id=>id==='s_mob'?mobTpl():id;
 function dayPlan(ds){const d=parseYmd(ds),p=weekOf(monKey(d)).d[dow(d)]||{in:null,out:null};if(S.cfg.daily&&S.cfg.daily.work&&S.cfg.daily.work[ds])return {in:'tpl_wmorn',out:null,work:true};return {in:resolveTpl(p.in),out:p.out}}
 function tplSub(t){return tplCat(t)==='run'||t.type==='run'?(RUNKINDS[t.runKind||'easy']||RUNKINDS.easy).label+(t.targetKm?' · '+t.targetKm+' km':''):(t.items||[]).length+' exercises'}
 function slotRow(label,id,done,out){
-  const t=id&&tplById(id),ic=out?'🌳':'🏋️';
-  if(!t)return '<div class="item"><span class="grow"><b>'+ic+' '+label+'</b><div class="sub">Nothing planned · set it in the Plan tab</div></span><button class="btn sm" data-act="tab" data-t="plan">Plan</button></div>';
+  const t=id&&tplById(id);
+  if(!t)return '<div class="item"><span class="grow"><b>'+label+'</b><div class="sub">Nothing planned · set it in the Plan tab</div></span><button class="btn sm" data-act="tab" data-t="plan">Plan</button></div>';
   const ok=done.some(s=>s.templateId===t.id);
-  return '<div class="item"><span class="grow"><span class="sub">'+ic+' '+label+'</span><br><b>'+esc(t.name)+'</b><div class="sub">'+esc(tplSub(t))+'</div></span>'
+  return '<div class="item"><span class="grow"><span class="sub">'+label+'</span><br><b>'+esc(t.name)+'</b><div class="sub">'+esc(tplSub(t))+'</div></span>'
     +(ok?'<span class="chip" style="color:var(--ok)">Done ✓</span>':'<button class="btn sm primary" data-act="start" data-tpl="'+t.id+'">'+(t.type==='run'?'Log':'Start')+'</button>')+'</div>';
 }
 function sundayCard(){
@@ -1592,14 +1592,14 @@ function viewToday(){
     const dt=new Date(mon);dt.setDate(dt.getDate()+i);const ds=ymd(dt);
     const p=wkp.d[i]||{},ts2=[resolveTpl(p.in),p.out].map(tplById).filter(Boolean);
     const done=S.sessions.some(s=>s.date===ds);
-    html+='<div class="wd '+(ds===ts?'today':'')+'">'+DAYS[i]+'<b>'+dt.getDate()+'</b><div class="mk">'+(isWork(ds)&&!done?'\ud83e\uddf3':done?'<span class="ok">✓</span>':ts2.map(t=>'<span class="dot '+t.type+'"></span>').join(''))+'</div></div>';
+    html+='<div class="wd '+(ds===ts?'today':'')+'">'+DAYS[i]+'<b>'+dt.getDate()+'</b><div class="mk">'+(isWork(ds)&&!done?'<span class="sub" style="font-size:10px;font-weight:700">WORK</span>':done?'<span class="ok">✓</span>':ts2.map(t=>'<span class="dot '+t.type+'"></span>').join(''))+'</div></div>';
   }
   html+='</div><div class="stats" style="margin-top:12px"><div class="stat"><b>'+st.thisWeek+'/'+st.T+'</b><span>this week</span></div><div class="stat"><b>'+r1(weekKm(mon))+'</b><span>km this week</span></div><div class="stat"><b>'+st.cur+'</b><span>week streak</span></div></div>';
   const kw=kmWarning(mon);
   if(kw) html+='<div class="sub" style="margin-top:8px;color:var(--core);font-weight:600">'+esc(kw)+'</div>';
   html+='</div>';
   const p=dayPlan(ts);
-  html+='<div class="card"><h2>'+(isWork(ts)?'\ud83e\uddf3 Work day \u00b7 optional 15 min this morning':'Planned for today')+'</h2><div class="list">'+slotRow('Indoor',p.in,doneToday,false)+(p.out?slotRow('Outdoor',p.out,doneToday,true):'')+'</div>'+(isWork(ts)?'<div class="sub" style="margin-top:6px">Skip it if you need to \u2014 work days don\u2019t break your streak.</div>':'')+'</div>';
+  html+='<div class="card"><h2>'+(isWork(ts)?'Work day \u00b7 optional 15 min this morning':'Planned for today')+'</h2><div class="list">'+slotRow('Indoor',p.in,doneToday,false)+(p.out?slotRow('Outdoor',p.out,doneToday,true):'')+'</div>'+(isWork(ts)?'<div class="sub" style="margin-top:6px">Skip it if you need to \u2014 work days don\u2019t break your streak.</div>':'')+'</div>';
   html+=todayPlanCard();
   if(doneToday.length) html+='<div class="card"><h2>Done today</h2>'+doneToday.map(sessCard).join('')+'</div>';
   return html;
@@ -1615,9 +1615,9 @@ function viewPlan(){
     +'<div class="sub" style="margin-bottom:6px">Week of '+esc(fmtDate(mk,{day:'numeric',month:'long'}))+'</div>';
   for(let i=0;i<7;i++){
     const dt=new Date(mon);dt.setDate(dt.getDate()+i);const p=wk.d[i]||{};
-    html+='<div class="plan-day"><div class="row between"><b>'+DAYS[i]+' '+dt.getDate()+(ymd(dt)===todayStr()?' · today':'')+'</b><button class="btn sm'+(isWork(ymd(dt))?' primary':'')+'" style="min-height:28px;padding:2px 10px" data-act="dy-work" data-d="'+ymd(dt)+'">\ud83e\uddf3 '+(isWork(ymd(dt))?'Work day':'Work?')+'</button></div>'
-      +'<div class="row" style="gap:6px;margin-top:6px"><span style="flex:0 0 22px">🏋️</span><select data-f="wk-slot" data-w="'+mk+'" data-d="'+i+'" data-s="in">'+tplOpts(p.in,false)+'</select></div>'
-      +'<div class="row" style="gap:6px;margin-top:6px"><span style="flex:0 0 22px">🌳</span><select data-f="wk-slot" data-w="'+mk+'" data-d="'+i+'" data-s="out">'+tplOpts(p.out,true)+'</select></div></div>';
+    html+='<div class="plan-day"><div class="row between"><b>'+DAYS[i]+' '+dt.getDate()+(ymd(dt)===todayStr()?' · today':'')+'</b><button class="btn sm'+(isWork(ymd(dt))?' primary':'')+'" style="min-height:28px;padding:2px 10px" data-act="dy-work" data-d="'+ymd(dt)+'">'+(isWork(ymd(dt))?'Work day':'Work?')+'</button></div>'
+      +'<div class="row" style="gap:6px;margin-top:6px"><span class="sub" style="flex:0 0 58px">Indoor</span><select data-f="wk-slot" data-w="'+mk+'" data-d="'+i+'" data-s="in">'+tplOpts(p.in,false)+'</select></div>'
+      +'<div class="row" style="gap:6px;margin-top:6px"><span class="sub" style="flex:0 0 58px">Outdoor</span><select data-f="wk-slot" data-w="'+mk+'" data-d="'+i+'" data-s="out">'+tplOpts(p.out,true)+'</select></div></div>';
   }
   html+='<div class="row" style="gap:6px;margin-top:10px;flex-wrap:wrap"><select data-f="wt-apply" data-w="'+mk+'" style="flex:1"><option value="">Apply a weekly template…</option>'+c.weekTpls.map(t=>'<option value="'+t.id+'">'+esc(t.name)+'</option>').join('')+'</select><button class="btn sm" data-act="wkt-save" data-w="'+mk+'">Save as template</button></div></div>';
   html+='<div class="card"><h2>Weekly templates</h2>'+(c.weekTpls.length?'<div class="list">'+c.weekTpls.map(t=>'<div class="item"><span class="grow"><b>'+esc(t.name)+'</b><div class="sub">'+t.d.map((x,i)=>DAYS[i][0]+': '+esc(((tplById(resolveTpl(x.in))||{}).name||'–').split(/[ ,(]/)[0])).join(' · ')+'</div></span><button class="btn sm" data-act="wkt-ren" data-id="'+t.id+'">Rename</button><button class="btn sm danger" data-act="wkt-del" data-id="'+t.id+'">✕</button></div>').join('')+'</div>':'<div class="empty">No weekly templates yet. Plan a week and tap “Save as template”.</div>')+'</div>';
@@ -2515,6 +2515,9 @@ async function hrConnect(){
   if(typeof WebBLECore==='undefined'||!WebBLECore.WebBLE){toast('Bluetooth helper missing — update the app');return}
   HR.busy=true;
   try{
+    let waited=false;for(let i=0;i<15&&!hrDiag().ext&&!hrDiag().nat;i++){waited=true;await new Promise(r=>setTimeout(r,100))}
+    if(waited&&(hrDiag().ext||hrDiag().nat)){toast('Bluetooth ready \u2014 tap Connect watch again');if($('#hr-live'))openSettings();return}
+    if(!hrDiag().ext&&!hrDiag().nat){const d=hrDiag();toast(d.sa?'Open the app in a Safari tab (not the home-screen icon), then try again.':'WebBLE isn\u2019t active on this page. In Safari tap aA \u2192 WebBLE \u2192 Always Allow on this website, then reload.');if($('#hr-live'))openSettings();return}
     const ble=new WebBLECore.WebBLE();
     const dev=await ble.requestDevice({filters:[{services:['heart_rate']}]});
     toast('Connecting…');
@@ -2534,8 +2537,16 @@ function hrDisconnect(){
   try{HR.dev&&HR.dev.disconnect()}catch(e){}
   HR.dev=null;HR.bpm=null;HR.unsub=null;hrWake(false);hrPaint();toast('Watch disconnected');
 }
+function hrDiag(){
+  const n=navigator,sa=(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||n.standalone===true;
+  const ext=!!(n.webble&&n.webble.__webble===true),nat=!!n.bluetooth;
+  return {sa:sa,ext:ext,nat:nat};
+}
+function hrDiagHTML(){const d=hrDiag();const li=(ok,t)=>'<div>'+(ok?'\u2705':'\u274c')+' '+t+'</div>';
+  return '<div class="sub" style="margin-top:8px;line-height:1.7">'+li(!d.sa,d.sa?'Opened from the home-screen icon \u2014 open it in a Safari tab instead':'Opened in a browser tab')+li(d.ext||d.nat,d.ext?'WebBLE extension found':d.nat?'Built-in Bluetooth found':'WebBLE extension not active on this page')+'</div>'}
 function hrSection(){
   return '<label class="lbl">Heart rate from watch (test)</label><div class="sub">Live heart rate over Bluetooth. Watch: Settings → HR Data Broadcasts → on. iPhone: open the app in Safari with the WebBLE extension on.</div>'
+    +(HR.dev?'':hrDiagHTML())
     +'<div id="hr-live" style="margin-top:8px">'+hrLiveHTML()+'</div>'
     +'<div class="row" style="margin-top:8px;gap:6px">'+(HR.dev?'<button class="btn sm danger" data-act="hr-off">Disconnect</button>':'<button class="btn sm primary" data-act="hr-connect">Connect watch</button>')+'</div>';
 }
@@ -2640,18 +2651,18 @@ const booksDL=()=>{const t=new Set(DY().books.map(b=>b.title));Object.values(DY(
 function todayPlanCard(){
   const ds=todayStr(),l=dySched(ds),w=isWork(ds);
   const done=l.filter(x=>dyDone(x,ds)).length;
-  let h='<div class="card"'+(w?' style="border:2px solid var(--mute)"':'')+'><div class="row between"><h2 style="margin:0">'+(w?'🧳 Work day':'Today’s plan')+'</h2><span class="sub">'+(l.length?done+' / '+l.length+' done':'')+'</span></div>';
+  let h='<div class="card"'+(w?' style="border:2px solid var(--mute)"':'')+'><div class="row between"><h2 style="margin:0">'+(w?'Work day':'Today’s plan')+'</h2><span class="sub">'+(l.length?done+' / '+l.length+' done':'')+'</span></div>';
   if(w)h+='<div class="sub" style="margin-top:4px">Keep it small. Tick what you did and rest.</div>';
   if(!l.length)h+='<div class="empty" style="padding:10px">Nothing planned for today.</div>';
   h+=l.map(x=>dyCtl(x,ds)).join('');
-  h+='<div class="row" style="gap:6px;margin-top:10px;flex-wrap:wrap"><button class="btn sm" data-act="dy-work" data-d="'+ds+'">'+(w?'Not a work day':'🧳 Today is a work day')+'</button><button class="btn sm" data-act="dy-plan" data-d="'+ds+'">Edit today</button><button class="btn sm primary" data-act="dy-plan" data-d="'+addDays(ds,1)+'">Plan tomorrow</button></div>';
+  h+='<div class="row" style="gap:6px;margin-top:10px;flex-wrap:wrap"><button class="btn sm" data-act="dy-work" data-d="'+ds+'">'+(w?'Not a work day':'Today is a work day')+'</button><button class="btn sm" data-act="dy-plan" data-d="'+ds+'">Edit today</button><button class="btn sm primary" data-act="dy-plan" data-d="'+addDays(ds,1)+'">Plan tomorrow</button></div>';
   return h+booksDL()+'</div>';
 }
 function dailyBanners(){
   const n=new Date(),hr=n.getHours(),t=todayStr(),tm=addDays(t,1),D=DY();let h='';
   const late=hr>=21||hr<H_GRACE,dsToday=hr<H_GRACE?addDays(t,-1):t,dsTm=addDays(dsToday,1);
   if(late&&!isWork(dsToday)&&!D.plans[dsTm])h+='<div class="card" style="border:2px solid var(--accent)"><b>🗓️ Plan tomorrow</b><div class="sub" style="margin-top:4px">2 minutes: choose what you’ll do tomorrow.</div><button class="btn sm primary" style="margin-top:8px" data-act="dy-plan" data-d="'+dsTm+'">Plan '+esc(fmtDate(dsTm,{weekday:'long'}))+'</button></div>';
-  if(hr>=6&&hr<12&&isWork(t)&&!D.plans[tm])h+='<div class="card" style="border:2px solid var(--accent)"><b>🧳 Work day — plan tomorrow now</b><div class="sub" style="margin-top:4px">You’ll be home late tonight, so do it before you leave.</div><button class="btn sm primary" style="margin-top:8px" data-act="dy-plan" data-d="'+tm+'">Plan '+esc(fmtDate(tm,{weekday:'long'}))+'</button></div>';
+  if(hr>=6&&hr<12&&isWork(t)&&!D.plans[tm])h+='<div class="card" style="border:2px solid var(--accent)"><b>Work day — plan tomorrow now</b><div class="sub" style="margin-top:4px">You’ll be home late tonight, so do it before you leave.</div><button class="btn sm primary" style="margin-top:8px" data-act="dy-plan" data-d="'+tm+'">Plan '+esc(fmtDate(tm,{weekday:'long'}))+'</button></div>';
   if(hr>=6&&hr<12&&!D.plans[t]&&!dySched(t).length&&!isWork(t))h+='<div class="card"><b>No plan for today yet</b><button class="btn sm" style="margin-top:8px" data-act="dy-plan" data-d="'+t+'">Plan today</button></div>';
   if(hr>=19&&!isWork(t)){const left=dySched(t).filter(x=>!dyDone(x,t)).map(x=>x.name);if(left.length)h+='<div class="card" style="border:2px solid var(--core)"><b>'+left.length+' left today</b><div class="sub" style="margin-top:4px">'+esc(left.join(' · '))+'</div></div>'}
   return h;
@@ -2683,7 +2694,7 @@ function fullDaysCard(){
 }
 function planCard(){
   const t=todayStr(),tm=addDays(t,1),p=DY().plans[tm],n=dySched(tm).length;
-  return '<div class="card"><div class="row between"><div><h2 style="margin:0">Tomorrow</h2><div class="sub">'+esc(fmtDate(tm,{weekday:'long',day:'numeric',month:'short'}))+(isWork(tm)?' · 🧳 work day':'')+' · '+(p?n+' item'+(n===1?'':'s')+' planned ✓':'not planned yet')+'</div></div><button class="btn sm '+(p?'':'primary')+'" data-act="dy-plan" data-d="'+tm+'">'+(p?'Edit':'Plan')+'</button></div></div>';
+  return '<div class="card"><div class="row between"><div><h2 style="margin:0">Tomorrow</h2><div class="sub">'+esc(fmtDate(tm,{weekday:'long',day:'numeric',month:'short'}))+(isWork(tm)?' · work day':'')+' · '+(p?n+' item'+(n===1?'':'s')+' planned ✓':'not planned yet')+'</div></div><button class="btn sm '+(p?'':'primary')+'" data-act="dy-plan" data-d="'+tm+'">'+(p?'Edit':'Plan')+'</button></div></div>';
 }
 function booksCard(){
   const b=DY().books.filter(x=>x.fin).sort((a,c)=>a.fin<c.fin?1:-1),cur=DY().books.filter(x=>!x.fin);
@@ -2735,7 +2746,7 @@ function dyPlanOpen(ds){
   const hab=D.items.filter(x=>!x.arch&&x.every),tasks=D.items.filter(x=>!x.arch&&!x.every),dw=dow(parseYmd(ds));
   const habOn=x=>(!x.days||!x.days.length||x.days.indexOf(dw)>=0)&&(!DYP.work||x.onWork);
   let h='<h2>Plan '+esc(fmtDate(ds,{weekday:'long',day:'numeric',month:'short'}))+'</h2>'
-    +'<label class="sub" style="display:flex;gap:8px;align-items:center;margin-top:8px;font-size:15px"><input type="checkbox" data-act="dyp-work"'+(DYP.work?' checked':'')+'> 🧳 Work day (only work-day items, smaller goals)</label>';
+    +'<label class="sub" style="display:flex;gap:8px;align-items:center;margin-top:8px;font-size:15px"><input type="checkbox" data-act="dyp-work"'+(DYP.work?' checked':'')+'> Work day (only work-day items, smaller goals)</label>';
   h+='<label class="lbl">Tasks</label>'+(tasks.length?tasks.map(x=>'<label class="sub" style="display:flex;gap:8px;align-items:center;padding:6px 0;font-size:15px;color:var(--ink)"><input type="checkbox" data-act="dyp-tog" data-id="'+x.id+'"'+(DYP.ids.indexOf(x.id)>=0?' checked':'')+'> '+esc(x.name)+'<span class="sub">'+(num(x.goal)?' · '+(DYP.work&&x.wgoal!==''&&x.wgoal!=null?x.wgoal:x.goal)+' '+esc(dyUnit(x)):'')+'</span></label>').join(''):'<div class="sub">No tasks yet.</div>')
     +'<button class="btn sm ghost" style="margin-top:4px" data-act="dy-new" data-every="0" data-fromplan="1">+ New task</button>';
   h+='<label class="lbl">One-off items (just for this day)</label>'+DYP.extra.map((e,i)=>'<div class="row" style="gap:6px;padding:4px 0"><span class="grow">'+esc(e.name)+' <span class="sub">'+esc(DY_KINDS[e.kind].split(' ')[0])+(num(e.goal)?' '+e.goal+' '+esc(e.kind==='min'?'min':e.unit||''):'')+'</span></span><button class="btn sm" style="color:var(--danger)" data-act="dyp-xdel" data-i="'+i+'" aria-label="Delete"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg></button></div>').join('')
